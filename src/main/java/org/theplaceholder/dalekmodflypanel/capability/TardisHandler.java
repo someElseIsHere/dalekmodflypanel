@@ -32,9 +32,6 @@ public class TardisHandler {
                 TardisCapability capability = getTardisCapability(player);
 
                 if (!player.isOnGround()){
-                    capability.setRotation(capability.getRotation() + 1);
-                    if (capability.getRotation() >= 360)
-                        capability.setRotation(0);
                     capability.setTickOffGround(capability.getTickOffGround() + 1);
                 }else{
                     capability.setTickOnGround(capability.getTickOnGround() + 1);

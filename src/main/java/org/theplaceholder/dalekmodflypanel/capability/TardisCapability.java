@@ -5,29 +5,46 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.theplaceholder.dalekmodflypanel.DalekModFlyPanel;
+import org.theplaceholder.dalekmodflypanel.packet.SyncFlightPacket;
+
+import java.util.UUID;
 
 public class TardisCapability implements ITardisCapability{
     public boolean isInFlight;
     private int tardisId;
     private BlockPos tardisPos;
     public float rotation;
-    private PlayerEntity player;
+    private UUID player;
     private int tickOnGround;
-    private float bob;
     private int tickOffGround;
+    private int skinId;
 
 
-    public TardisCapability(PlayerEntity player) {
+    public TardisCapability(UUID player) {
         this.isInFlight = false;
         this.tardisId = 0;
         this.tardisPos = BlockPos.ZERO;
         this.rotation = 0.0f;
         this.tickOnGround = 0;
         this.player = player;
-        this.bob = 0.0f;
         this.tickOffGround = 0;
+        this.skinId = 0;
     }
 
+    public TardisCapability() {
+        this.isInFlight = false;
+        this.tardisId = 0;
+        this.tardisPos = BlockPos.ZERO;
+        this.rotation = 0.0f;
+        this.tickOnGround = 0;
+        this.player = new UUID(0, 0);
+        this.tickOffGround = 0;
+        this.skinId = 0;
+    }
+
+    public void sync() {
+        DalekModFlyPanel.NETWORK.send(PacketDistributor.PLAYER.noArg(), new SyncFlightPacket(writeNBT()));
+    }
 
     @Override
     public CompoundNBT writeNBT() {
@@ -37,7 +54,9 @@ public class TardisCapability implements ITardisCapability{
         tag.putFloat("rotation", this.getRotation());
         tag.putLong("tardisPos", this.getTardisPos().asLong());
         tag.putInt("tickOnGround", this.getTickOnGround());
-        tag.putFloat("bob", this.getBob());
+        tag.putInt("tickOffGround", this.getTickOffGround());
+        tag.putUUID("player", this.getPlayer());
+        tag.putInt("skinId", this.getSkinId());
         return tag;
     }
 
@@ -48,6 +67,9 @@ public class TardisCapability implements ITardisCapability{
         this.setRotation(tag.getFloat("rotation"));
         this.setTardisPos(BlockPos.of(tag.getLong("tardisPos")));
         this.setTickOnGround(tag.getInt("tickOnGround"));
+        this.setTickOffGround(tag.getInt("tickOffGround"));
+        this.setPlayer(tag.getUUID("player"));
+        this.setSkinId(tag.getInt("skinId"));
     }
 
     @Override
@@ -102,16 +124,6 @@ public class TardisCapability implements ITardisCapability{
     }
 
     @Override
-    public float getBob() {
-        return bob;
-    }
-
-    @Override
-    public void setBob(float i) {
-        bob = i;
-    }
-
-    @Override
     public int getTickOffGround() {
         return tickOffGround;
     }
@@ -119,5 +131,25 @@ public class TardisCapability implements ITardisCapability{
     @Override
     public void setTickOffGround(int i) {
         tickOffGround = i;
+    }
+
+    @Override
+    public UUID getPlayer() {
+        return player;
+    }
+
+    @Override
+    public void setPlayer(UUID uuid) {
+        player = uuid;
+    }
+
+    @Override
+    public int getSkinId() {
+        return skinId;
+    }
+
+    @Override
+    public void setSkinId(int i) {
+        skinId = i;
     }
 }

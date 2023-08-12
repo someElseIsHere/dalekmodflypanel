@@ -13,8 +13,6 @@ public class TardisUtils {
         if (player == null)
             return false;
         TardisCapability capa = getTardisCapability(player);
-        if (capa == null)
-            return false;
         return capa.getInFlight();
     }
 }

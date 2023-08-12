@@ -15,9 +15,12 @@ public class TardisProvider implements ICapabilitySerializable<CompoundNBT> {
     @CapabilityInject(ITardisCapability.class)
     public static final Capability<ITardisCapability> TARDIS_CAPABILITY = null;
     private ITardisCapability instance;
+    LazyOptional<ITardisCapability> optional;
+
 
     public TardisProvider(PlayerEntity player) {
-        instance = new TardisCapability(player);
+        instance = new TardisCapability(player.getUUID());
+        optional = LazyOptional.of(() -> instance);
     }
 
     @Override
@@ -33,6 +36,10 @@ public class TardisProvider implements ICapabilitySerializable<CompoundNBT> {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return cap == TARDIS_CAPABILITY ? LazyOptional.of(() -> instance).cast() : LazyOptional.empty();
+        if(cap == TARDIS_CAPABILITY) {
+            return optional.cast();
+        }
+
+        return LazyOptional.empty();
     }
 }

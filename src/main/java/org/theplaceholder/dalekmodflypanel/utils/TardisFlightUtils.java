@@ -6,16 +6,9 @@ import com.swdteam.common.init.DMTardis;
 import com.swdteam.common.tardis.TardisData;
 import com.swdteam.common.tardis.TardisSaveHandler;
 import com.swdteam.common.tileentity.TardisTileEntity;
-import com.swdteam.util.TeleportUtil;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.dispenser.IPosition;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.minecart.ContainerMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -25,7 +18,6 @@ import org.theplaceholder.dalekmodflypanel.DalekModFlyPanel;
 import org.theplaceholder.dalekmodflypanel.capability.ITardisCapability;
 import org.theplaceholder.dalekmodflypanel.capability.TardisProvider;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
-import org.theplaceholder.dalekmodflypanel.packet.FlightPacket;
 
 public class TardisFlightUtils {
     public static void stopPlayerFlight(PlayerEntity player) {
@@ -34,7 +26,6 @@ public class TardisFlightUtils {
         BlockPos playerPos = player.blockPosition();
         TardisData tardisData = DMTardis.getTardis(capa.getTardisId());
         ServerWorld playerWorld = (ServerWorld) player.level;
-        ServerWorld interiorWorld = playerWorld.getServer().getLevel(DMDimensions.TARDIS);
 
         ((ITardisData) tardisData).dalekmodflypanel$setInFlightMode(false);
 
