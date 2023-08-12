@@ -13,8 +13,6 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.PacketDistributor;
-import org.theplaceholder.dalekmodflypanel.DalekModFlyPanel;
 import org.theplaceholder.dalekmodflypanel.capability.ITardisCapability;
 import org.theplaceholder.dalekmodflypanel.capability.TardisProvider;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
@@ -36,8 +34,6 @@ public class TardisFlightUtils {
         player.setInvisible(false);
         player.onUpdateAbilities();
 
-        DalekModFlyPanel.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new FlightPacket(false));
-
         playerWorld.setBlock(playerPos, DMBlocks.TARDIS.get().defaultBlockState(), 3);
         TardisTileEntity tardisTileEntity = ((TardisTileEntity) playerWorld.getBlockEntity(playerPos));
         tardisTileEntity.globalID = capa.getTardisId();
@@ -45,6 +41,7 @@ public class TardisFlightUtils {
         tardisTileEntity.setChanged();
         capa.setInFlight(false);
         capa.setTickOnGround(0);
+        capa.sync();
 
         tardisTileEntity.setRotation(capa.getRotation());
         tardisData.setCurrentLocation(playerPos, playerWorld.dimension());
@@ -55,7 +52,7 @@ public class TardisFlightUtils {
     }
 
     public static void startPlayerFlight(PlayerEntity player) {
-        ITardisCapability capa = player.getCapability(TardisProvider.TARDIS_CAPABILITY, null).orElse(null);
+        ITardisCapability capa = player.getCapability(TardisProvider.TARDIS_CAPABILITY).orElse(null);
         if (capa.getInFlight()) return;
         BlockPos interiorPos = player.blockPosition();
         BlockPos exteriorPos = DMTardis.getTardisFromInteriorPos(interiorPos).getCurrentLocation().getBlockPosition();
@@ -75,12 +72,12 @@ public class TardisFlightUtils {
         player.setInvisible(true);
         player.onUpdateAbilities();
 
-        DalekModFlyPanel.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new FlightPacket(true));
-
         capa.setInFlight(true);
         capa.setTardisId(tardisData.getGlobalID());
         capa.setTardisPos(interiorPos);
         capa.setRotation(rotation);
+        capa.setPlayer(player.getUUID());
+        capa.sync();
 
         exteriorWorld.setBlock(exteriorPos, Blocks.AIR.defaultBlockState(), 3);
 
@@ -94,4 +91,3 @@ public class TardisFlightUtils {
         entity.teleportTo(nextWorld, destinationPos.getX() + 0.5, destinationPos.getY() + 0.5, destinationPos.getZ() + 0.5, yRot, 0.0f);
     }
 }
-

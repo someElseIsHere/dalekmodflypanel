@@ -2,6 +2,7 @@ package org.theplaceholder.dalekmodflypanel.capability;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -20,8 +21,21 @@ public class TardisHandler {
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof PlayerEntity) {
-            event.addCapability(DalekModFlyPanel.TARDIS_CAP, new TardisProvider((PlayerEntity) event.getObject()));
+            event.addCapability(DalekModFlyPanel.TARDIS_CAP, new TardisProvider());
         }
+    }
+
+    @SubscribeEvent
+    public void onClone(PlayerEvent.Clone event){
+        TardisCapability oldCap = getTardisCapability(event.getOriginal());
+        TardisCapability newCap = getTardisCapability(event.getPlayer());
+        newCap.setInFlight(oldCap.getInFlight());
+        newCap.setTardisId(oldCap.getTardisId());
+        newCap.setTardisPos(oldCap.getTardisPos());
+        newCap.setTickOnGround(oldCap.getTickOnGround());
+        newCap.setTickOffGround(oldCap.getTickOffGround());
+        newCap.setRotation(oldCap.getRotation());
+        newCap.sync();
     }
 
     @SubscribeEvent
@@ -32,7 +46,13 @@ public class TardisHandler {
                 TardisCapability capability = getTardisCapability(player);
 
                 if (!player.isOnGround()){
+                    capability.setRotation(capability.getRotation() + 1);
+                    if (capability.getRotation() >= 360)
+                        capability.setRotation(0);
+
+                    capability.setTickOnGround(0);
                     capability.setTickOffGround(capability.getTickOffGround() + 1);
+                    capability.sync();
                 }else{
                     capability.setTickOnGround(capability.getTickOnGround() + 1);
                     if (capability.getTickOnGround() >= 40 && player.isShiftKeyDown()){

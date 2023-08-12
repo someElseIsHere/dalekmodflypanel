@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface ITardisCapability {
 
+    void sync();
+
     CompoundNBT writeNBT();
     void readNBT(CompoundNBT nbt);
 

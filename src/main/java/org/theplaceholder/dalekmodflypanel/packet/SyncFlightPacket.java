@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 public class SyncFlightPacket {
     private CompoundNBT nbt;
     public SyncFlightPacket(CompoundNBT nbt) {
-        this.nbt = new CompoundNBT();
+        this.nbt = nbt;
     }
 
     public static void encode(SyncFlightPacket msg, PacketBuffer buf) {
@@ -30,23 +30,24 @@ public class SyncFlightPacket {
     public static void handle(SyncFlightPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             UUID uuid = msg.nbt.getUUID("player");
-            if (msg.nbt.getBoolean("inFlight")) {
-                ResourceLocation rl = ClientTardisCache.getTardisData(msg.nbt.getInt("tardisId")).getTardisExterior().getData().getModel(msg.nbt.getInt("skinId"));
-                RenderPlayerTardis.playerModelMap.put(uuid, ExteriorModels.getModel(rl));
-                RenderPlayerTardis.playerTardisMap.put(uuid, 0f);
-                RenderPlayerTardis.playerRotationMap.put(uuid, msg.nbt.getInt("rotation"));
-            }else {
-                RenderPlayerTardis.playerModelMap.remove(uuid);
-                RenderPlayerTardis.playerTardisMap.remove(uuid);
-                RenderPlayerTardis.playerRotationMap.remove(uuid);
-            }
 
             if (uuid.equals(Minecraft.getInstance().player.getUUID())) {
-                if (msg.nbt.getBoolean("inFlight")) {
+                if (msg.nbt.getBoolean("isInFlight")) {
                     Minecraft.getInstance().options.setCameraType(PointOfView.THIRD_PERSON_BACK);
                 }else {
                     Minecraft.getInstance().options.setCameraType(PointOfView.FIRST_PERSON);
                 }
+            }
+
+            if (msg.nbt.getBoolean("isInFlight")) {
+                ResourceLocation rl = ClientTardisCache.getTardisData(msg.nbt.getInt("isInFlight")).getTardisExterior().getData().getModel(msg.nbt.getInt("skinId"));
+                RenderPlayerTardis.playerModelMap.put(uuid, ExteriorModels.getModel(rl));
+                RenderPlayerTardis.playerBobMap.put(uuid, 0f);
+                RenderPlayerTardis.playerRotationMap.put(uuid, msg.nbt.getInt("rotation"));
+            }else {
+                RenderPlayerTardis.playerModelMap.remove(uuid);
+                RenderPlayerTardis.playerBobMap.remove(uuid);
+                RenderPlayerTardis.playerRotationMap.remove(uuid);
             }
         });
     }

@@ -5,8 +5,10 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "dalekmodflypanel.refmap.json",
   "mixins": [
-    "GameSettingsMixin",
     "TardisDataMixin"
+  ],
+  "client": [
+    "GameSettingsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

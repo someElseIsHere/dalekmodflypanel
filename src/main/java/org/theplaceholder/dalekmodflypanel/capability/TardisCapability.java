@@ -1,6 +1,5 @@
 package org.theplaceholder.dalekmodflypanel.capability;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -12,38 +11,16 @@ import java.util.UUID;
 public class TardisCapability implements ITardisCapability{
     public boolean isInFlight;
     private int tardisId;
-    private BlockPos tardisPos;
+    private BlockPos tardisPos = BlockPos.ZERO;
     public float rotation;
-    private UUID player;
+    private UUID player = UUID.randomUUID();
     private int tickOnGround;
     private int tickOffGround;
     private int skinId;
 
-
-    public TardisCapability(UUID player) {
-        this.isInFlight = false;
-        this.tardisId = 0;
-        this.tardisPos = BlockPos.ZERO;
-        this.rotation = 0.0f;
-        this.tickOnGround = 0;
-        this.player = player;
-        this.tickOffGround = 0;
-        this.skinId = 0;
-    }
-
-    public TardisCapability() {
-        this.isInFlight = false;
-        this.tardisId = 0;
-        this.tardisPos = BlockPos.ZERO;
-        this.rotation = 0.0f;
-        this.tickOnGround = 0;
-        this.player = new UUID(0, 0);
-        this.tickOffGround = 0;
-        this.skinId = 0;
-    }
-
+    @Override
     public void sync() {
-        DalekModFlyPanel.NETWORK.send(PacketDistributor.PLAYER.noArg(), new SyncFlightPacket(writeNBT()));
+        DalekModFlyPanel.NETWORK.send(PacketDistributor.ALL.noArg(), new SyncFlightPacket(writeNBT()));
     }
 
     @Override

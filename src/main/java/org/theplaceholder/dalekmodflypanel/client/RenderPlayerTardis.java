@@ -12,20 +12,18 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.theplaceholder.dalekmodflypanel.utils.TardisUtils.isInFlightMode;
-
 public class RenderPlayerTardis {
-    public static Map<UUID, JSONModel> playerModelMap;
-    public static Map<UUID, Float> playerTardisMap;
-    public static Map<UUID, Integer> playerRotationMap;
+    public static Map<UUID, JSONModel> playerModelMap = new HashMap<>();
+    public static Map<UUID, Float> playerBobMap = new HashMap<>();
+    public static Map<UUID, Integer> playerRotationMap = new HashMap<>();
 
     @SubscribeEvent
     public void guiOverlayEventPre(final RenderGameOverlayEvent.Pre e) {
-        PlayerEntity player = Minecraft.getInstance().player;
-        if (isInFlightMode(player)) {
+        if (playerModelMap.containsKey(Minecraft.getInstance().player.getUUID())) {
             if (e.getType() == RenderGameOverlayEvent.ElementType.FOOD) {
                 e.setCanceled(true);
             }
@@ -73,20 +71,15 @@ public class RenderPlayerTardis {
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(playerRotationMap.get(player.getUUID())));
 
         if (!player.isOnGround()) {
-            float f = playerTardisMap.get(player.getUUID());
+            float f = playerBobMap.get(player.getUUID());
             f = (float) (Math.cos((double)(f + partialTicks) * 0.05) * 0.5 + 0.5);
             f = f * f;
-            playerTardisMap.put(player.getUUID(), f);
+            playerBobMap.put(player.getUUID(), f);
         } else {
-            playerTardisMap.put(player.getUUID(), 1f);
+            playerBobMap.put(player.getUUID(), 1f);
         }
 
-        playerRotationMap.put(player.getUUID(), playerRotationMap.get(player.getUUID()) + 1);
-        if (playerRotationMap.get(player.getUUID()) >= 360) {
-            playerRotationMap.put(player.getUUID(), 0);
-        }
-
-        matrixStack.translate(0.0, playerTardisMap.get(player.getUUID()) - 1.0F, 0.0);
+        matrixStack.translate(0.0, playerBobMap.get(player.getUUID()) - 1.0F, 0.0);
         MODEL_TARDIS.getModelData().getModel().renderToBuffer(matrixStack, iRenderTypeBuffer, ivertexbuilder, combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
 
         matrixStack.popPose();
