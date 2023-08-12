@@ -22,7 +22,6 @@ import org.theplaceholder.dalekmodflypanel.capability.TardisHandler;
 import org.theplaceholder.dalekmodflypanel.capability.TardisStorage;
 import org.theplaceholder.dalekmodflypanel.client.RenderPlayerTardis;
 import org.theplaceholder.dalekmodflypanel.packet.FlightPacket;
-import org.theplaceholder.dalekmodflypanel.packet.SyncFlightModeCapPacket;
 
 import java.util.Optional;
 
@@ -39,14 +38,15 @@ public class DalekModFlyPanel {
         BLOCKS.register("tardis_flight_panel", () -> new FlightPanelBlock(Block.Properties.of(Material.STONE)));
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         MinecraftForge.EVENT_BUS.register(new TardisHandler());
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.register(new RenderPlayerTardis()));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            MinecraftForge.EVENT_BUS.register(new RenderPlayerTardis());
+        });
     }
 
     public void setup(FMLCommonSetupEvent event){
         CapabilityManager.INSTANCE.register(ITardisCapability.class, new TardisStorage(), () -> new TardisCapability(null));
 
         int index = 0;
-        NETWORK.registerMessage(index++, SyncFlightModeCapPacket.class, SyncFlightModeCapPacket::encode, SyncFlightModeCapPacket::decode, SyncFlightModeCapPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         NETWORK.registerMessage(index++, FlightPacket.class, FlightPacket::encode, FlightPacket::decode, FlightPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }

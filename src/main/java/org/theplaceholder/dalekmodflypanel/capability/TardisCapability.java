@@ -5,25 +5,27 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.theplaceholder.dalekmodflypanel.DalekModFlyPanel;
-import org.theplaceholder.dalekmodflypanel.packet.SyncFlightModeCapPacket;
 
 public class TardisCapability implements ITardisCapability{
     public boolean isInFlight;
-    public boolean resetLogin;
     private int tardisId;
     private BlockPos tardisPos;
     public float rotation;
     private PlayerEntity player;
     private int tickOnGround;
+    private float bob;
+    private int tickOffGround;
+
 
     public TardisCapability(PlayerEntity player) {
         this.isInFlight = false;
-        this.resetLogin = false;
         this.tardisId = 0;
         this.tardisPos = BlockPos.ZERO;
         this.rotation = 0.0f;
         this.tickOnGround = 0;
         this.player = player;
+        this.bob = 0.0f;
+        this.tickOffGround = 0;
     }
 
 
@@ -35,6 +37,7 @@ public class TardisCapability implements ITardisCapability{
         tag.putFloat("rotation", this.getRotation());
         tag.putLong("tardisPos", this.getTardisPos().asLong());
         tag.putInt("tickOnGround", this.getTickOnGround());
+        tag.putFloat("bob", this.getBob());
         return tag;
     }
 
@@ -45,16 +48,6 @@ public class TardisCapability implements ITardisCapability{
         this.setRotation(tag.getFloat("rotation"));
         this.setTardisPos(BlockPos.of(tag.getLong("tardisPos")));
         this.setTickOnGround(tag.getInt("tickOnGround"));
-    }
-
-    @Override
-    public void syncToPlayer() {
-        if (!this.player.level.isClientSide) {
-            final CompoundNBT compound = this.writeNBT();
-            if (compound != null) {
-                DalekModFlyPanel.NETWORK.send(PacketDistributor.ALL.noArg(), new SyncFlightModeCapPacket(this.player, compound));
-            }
-        }
     }
 
     @Override
@@ -106,5 +99,25 @@ public class TardisCapability implements ITardisCapability{
     @Override
     public int getTickOnGround() {
         return tickOnGround;
+    }
+
+    @Override
+    public float getBob() {
+        return bob;
+    }
+
+    @Override
+    public void setBob(float i) {
+        bob = i;
+    }
+
+    @Override
+    public int getTickOffGround() {
+        return tickOffGround;
+    }
+
+    @Override
+    public void setTickOffGround(int i) {
+        tickOffGround = i;
     }
 }

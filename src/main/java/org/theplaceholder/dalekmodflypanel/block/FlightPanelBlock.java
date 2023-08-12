@@ -8,10 +8,13 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import org.theplaceholder.dalekmodflypanel.utils.TardisFlightUtils;
 
@@ -42,5 +45,10 @@ public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockToo
     @Override
     public BlockRenderType getRenderShape(BlockState blockState) {
         return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
+        return Block.box(0, 0, 0, 16, 0.5, 16);
     }
 }

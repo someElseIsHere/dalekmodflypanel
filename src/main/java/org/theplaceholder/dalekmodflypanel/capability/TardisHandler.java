@@ -9,13 +9,20 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.theplaceholder.dalekmodflypanel.DalekModFlyPanel;
 
-import static org.theplaceholder.dalekmodflypanel.DalekModFlyPanel.TARDIS_CAP;
 import static org.theplaceholder.dalekmodflypanel.utils.TardisFlightUtils.stopPlayerFlight;
 import static org.theplaceholder.dalekmodflypanel.utils.TardisUtils.getTardisCapability;
 import static org.theplaceholder.dalekmodflypanel.utils.TardisUtils.isInFlightMode;
 
 public class TardisHandler {
+
+    @SubscribeEvent
+    public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof PlayerEntity) {
+            event.addCapability(DalekModFlyPanel.TARDIS_CAP, new TardisProvider((PlayerEntity) event.getObject()));
+        }
+    }
 
     @SubscribeEvent
     public static void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
@@ -28,11 +35,13 @@ public class TardisHandler {
                     capability.setRotation(capability.getRotation() + 1);
                     if (capability.getRotation() >= 360)
                         capability.setRotation(0);
+                    capability.setTickOffGround(capability.getTickOffGround() + 1);
                 }else{
                     capability.setTickOnGround(capability.getTickOnGround() + 1);
                     if (capability.getTickOnGround() >= 40 && player.isShiftKeyDown()){
                         stopPlayerFlight(player);
                     }
+                    capability.setTickOffGround(0);
                 }
             }
         }
@@ -68,17 +77,5 @@ public class TardisHandler {
     public static void playerConnect(PlayerEvent.PlayerLoggedInEvent e) {
         if (isInFlightMode(e.getPlayer()))
             stopPlayerFlight(e.getPlayer());
-    }
-
-    @SubscribeEvent
-    public static void disableItemUse(PlayerInteractEvent.RightClickItem e) {
-        if (isInFlightMode(e.getPlayer()))
-            e.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof PlayerEntity)
-            event.addCapability(TARDIS_CAP, new TardisProvider((PlayerEntity) event.getObject()));
     }
 }

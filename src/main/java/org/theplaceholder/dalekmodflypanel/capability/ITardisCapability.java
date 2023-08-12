@@ -7,7 +7,6 @@ public interface ITardisCapability {
 
     CompoundNBT writeNBT();
     void readNBT(CompoundNBT nbt);
-    void syncToPlayer();
 
     boolean getInFlight();
 
@@ -27,4 +26,10 @@ public interface ITardisCapability {
 
     void setTickOnGround(int i);
     int getTickOnGround();
+
+    float getBob();
+    void setBob(float i);
+
+    int getTickOffGround();
+    void setTickOffGround(int i);
 }

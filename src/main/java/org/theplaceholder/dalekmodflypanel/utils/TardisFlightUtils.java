@@ -6,9 +6,17 @@ import com.swdteam.common.init.DMTardis;
 import com.swdteam.common.tardis.TardisData;
 import com.swdteam.common.tardis.TardisSaveHandler;
 import com.swdteam.common.tileentity.TardisTileEntity;
+import com.swdteam.util.TeleportUtil;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.dispenser.IPosition;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.item.minecart.ContainerMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -28,31 +36,29 @@ public class TardisFlightUtils {
         ServerWorld playerWorld = (ServerWorld) player.level;
         ServerWorld interiorWorld = playerWorld.getServer().getLevel(DMDimensions.TARDIS);
 
-        ((ITardisData)tardisData).dalekmodflypanel$setInFlightMode(false);
+        ((ITardisData) tardisData).dalekmodflypanel$setInFlightMode(false);
 
         player.setInvulnerable(false);
         player.abilities.mayfly = false;
         player.abilities.flying = false;
-        player.eyeHeight =  1.6f;
+        player.eyeHeight = 1.6f;
         player.setInvisible(false);
         player.onUpdateAbilities();
 
         DalekModFlyPanel.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new FlightPacket(false));
 
         playerWorld.setBlock(playerPos, DMBlocks.TARDIS.get().defaultBlockState(), 3);
-        TardisTileEntity tardisTileEntity = ((TardisTileEntity)interiorWorld.getBlockEntity(playerPos));
+        TardisTileEntity tardisTileEntity = ((TardisTileEntity) playerWorld.getBlockEntity(playerPos));
         tardisTileEntity.globalID = capa.getTardisId();
         tardisTileEntity.tardisData = tardisData;
+        tardisTileEntity.setChanged();
         capa.setInFlight(false);
         capa.setTickOnGround(0);
 
         tardisTileEntity.setRotation(capa.getRotation());
         tardisData.setCurrentLocation(playerPos, playerWorld.dimension());
-        capa.syncToPlayer();
 
-
-        player.changeDimension(interiorWorld);
-        player.setPos(playerPos.getX() + 0.5, playerPos.getY() + 0.5, playerPos.getZ() + 0.5);
+        teleportPlayer((ServerPlayerEntity) player, DMDimensions.TARDIS, capa.getTardisPos(), 0);
 
         TardisSaveHandler.saveTardisData(tardisData);
     }
@@ -65,11 +71,11 @@ public class TardisFlightUtils {
         TardisData tardisData = DMTardis.getTardisFromInteriorPos(interiorPos);
         World interiorWorld = player.level;
         ServerWorld exteriorWorld = interiorWorld.getServer().getLevel(tardisData.getCurrentLocation().dimensionWorldKey());
-        TardisTileEntity tardisTileEntity = ((TardisTileEntity)interiorWorld.getBlockEntity(exteriorPos));
+        TardisTileEntity tardisTileEntity = ((TardisTileEntity) exteriorWorld.getBlockEntity(exteriorPos));
         if (tardisTileEntity == null) return;
         float rotation = tardisTileEntity.getRotation();
 
-        ((ITardisData)tardisData).dalekmodflypanel$setInFlightMode(true);
+        ((ITardisData) tardisData).dalekmodflypanel$setInFlightMode(true);
 
         player.setInvulnerable(true);
         player.abilities.mayfly = true;
@@ -84,13 +90,17 @@ public class TardisFlightUtils {
         capa.setTardisId(tardisData.getGlobalID());
         capa.setTardisPos(interiorPos);
         capa.setRotation(rotation);
-        capa.syncToPlayer();
 
         exteriorWorld.setBlock(exteriorPos, Blocks.AIR.defaultBlockState(), 3);
 
-        player.changeDimension(exteriorWorld);
-        player.setPos(interiorPos.getX() + 0.5, interiorPos.getY() + 0.5, interiorPos.getZ() + 0.5);
+        teleportPlayer((ServerPlayerEntity) player, tardisData.getCurrentLocation().dimensionWorldKey(), exteriorPos, rotation);
 
         TardisSaveHandler.saveTardisData(tardisData);
     }
+
+    public static void teleportPlayer(ServerPlayerEntity entity, RegistryKey<World> destinationType, BlockPos destinationPos, float yRot) {
+        ServerWorld nextWorld = entity.getServer().getLevel(destinationType);
+        entity.teleportTo(nextWorld, destinationPos.getX() + 0.5, destinationPos.getY() + 0.5, destinationPos.getZ() + 0.5, yRot, 0.0f);
+    }
 }
+

@@ -127,8 +127,7 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fg.deobf(fileTree(dir: 'libs', include: ['*.jar']))
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
     // compile "some.group:artifact:version"
