@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.theplaceholder.dalekmodflypanel.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "dalekmodflypanel.refmap.json",
+  "mixins": [
+    "GameSettingsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
