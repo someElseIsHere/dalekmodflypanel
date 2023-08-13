@@ -1,8 +1,11 @@
-package org.theplaceholder.dalekmodflypanel.block;
+package org.theplaceholder.dalekmodflypanel;
 
 import com.swdteam.common.block.IBlockTooltip;
 import com.swdteam.common.init.DMDimensions;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.IWaterLoggable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -16,10 +19,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import org.theplaceholder.dalekmodflypanel.utils.TardisFlightUtils;
+import org.theplaceholder.dalekmodflypanel.util.TardisFlightUtils;
 
 public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockTooltip {
-
     public FlightPanelBlock(Properties properties) {
         super(properties);
     }

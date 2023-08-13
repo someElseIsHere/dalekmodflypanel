@@ -1,18 +1,18 @@
-package org.theplaceholder.dalekmodflypanel.utils;
+package org.theplaceholder.dalekmodflypanel.util;
 
 import net.minecraft.entity.player.PlayerEntity;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
-import org.theplaceholder.dalekmodflypanel.capability.TardisProvider;
+import org.theplaceholder.dalekmodflypanel.capability.TardisCapabilityManager;
 
 public class TardisUtils {
     public static TardisCapability getTardisCapability(PlayerEntity player) {
-        return (TardisCapability) player.getCapability(TardisProvider.TARDIS_CAPABILITY).orElse(null);
+        return player.getCapability(TardisCapabilityManager.CAPABILITY).orElse(null);
     }
 
     public static boolean isInFlightMode(PlayerEntity player) {
         if (player == null)
             return false;
         TardisCapability capa = getTardisCapability(player);
-        return capa.getInFlight();
+        return capa.isInFlight();
     }
 }

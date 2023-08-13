@@ -2,6 +2,9 @@ package org.theplaceholder.dalekmodflypanel.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.swdteam.client.tardis.data.ClientTardisCache;
+import com.swdteam.client.tardis.data.ExteriorModels;
+import com.swdteam.common.tardis.TardisData;
 import com.swdteam.model.javajson.JSONModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -17,13 +20,11 @@ import java.util.Map;
 import java.util.UUID;
 
 public class RenderPlayerTardis {
-    public static Map<UUID, JSONModel> playerModelMap = new HashMap<>();
-    public static Map<UUID, Float> playerBobMap = new HashMap<>();
-    public static Map<UUID, Integer> playerRotationMap = new HashMap<>();
-
+    private static final Map<UUID, Float> playerBobMap = new HashMap<>();
     @SubscribeEvent
     public void guiOverlayEventPre(final RenderGameOverlayEvent.Pre e) {
-        if (playerModelMap.containsKey(Minecraft.getInstance().player.getUUID())) {
+        TardisFlightDataManager.TardisFlightData data = TardisFlightDataManager.getPlayerTardisFlightData(Minecraft.getInstance().player.getUUID());
+        if (data != null && data.inFlightMode) {
             if (e.getType() == RenderGameOverlayEvent.ElementType.FOOD) {
                 e.setCanceled(true);
             }
@@ -50,15 +51,20 @@ public class RenderPlayerTardis {
 
     @SubscribeEvent
     public static void renderPlayerPreEvent(final RenderPlayerEvent.Pre e) {
-        if (playerModelMap.containsKey(e.getPlayer().getUUID())) {
+        TardisFlightDataManager.TardisFlightData data = TardisFlightDataManager.getPlayerTardisFlightData(e.getPlayer().getUUID());
+        if (data != null && data.inFlightMode) {
+            TardisData tardisData = ClientTardisCache.getTardisData(data.tardisId);
+            if (tardisData == null)
+                return;
             e.setCanceled(true);
-            JSONModel MODEL_TARDIS = playerModelMap.get(e.getPlayer().getUUID());
+            JSONModel MODEL_TARDIS = ExteriorModels.getModel(tardisData.getTardisExterior().getData().getModel(tardisData.getSkinID()));
             IVertexBuilder ivertexbuilder = e.getBuffers().getBuffer(RenderType.text(MODEL_TARDIS.getModelData().getTexture()));
             renderTardis(MODEL_TARDIS, ivertexbuilder, e.getPlayer(), e.getMatrixStack(), e.getBuffers(), e.getPartialRenderTick(), e.getLight(), e.getLight());
         }
     }
 
     public static void renderTardis(JSONModel MODEL_TARDIS, IVertexBuilder ivertexbuilder, PlayerEntity player, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, float partialTicks, int combinedLightIn, int combinedOverlayIn) {
+        TardisFlightDataManager.TardisFlightData data = TardisFlightDataManager.getPlayerTardisFlightData(player.getUUID());
         matrixStack.pushPose();
         matrixStack.translate(0.5, 0.01, 0.5);
         matrixStack.translate(0.0, 1.5, 0.0);
@@ -68,9 +74,9 @@ public class RenderPlayerTardis {
         matrixStack.translate(0.0, -1.5, 0.0);
         matrixStack.translate(0.0, -0.01, 0.0);
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(playerRotationMap.get(player.getUUID())));
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(data.rotation));
 
-        if (!player.isOnGround()) {
+        if (!player.isOnGround() || !playerBobMap.containsKey(player.getUUID())) {
             float f = playerBobMap.get(player.getUUID());
             f = (float) (Math.cos((double)(f + partialTicks) * 0.05) * 0.5 + 0.5);
             f = f * f;

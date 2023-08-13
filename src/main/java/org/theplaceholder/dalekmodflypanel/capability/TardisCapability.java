@@ -2,131 +2,29 @@ package org.theplaceholder.dalekmodflypanel.capability;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.PacketDistributor;
-import org.theplaceholder.dalekmodflypanel.DalekModFlyPanel;
-import org.theplaceholder.dalekmodflypanel.packet.SyncFlightPacket;
+import net.minecraftforge.common.util.INBTSerializable;
 
-import java.util.UUID;
+public interface TardisCapability extends INBTSerializable<CompoundNBT> {
 
-public class TardisCapability implements ITardisCapability{
-    public boolean isInFlight;
-    private int tardisId;
-    private BlockPos tardisPos = BlockPos.ZERO;
-    public float rotation;
-    private UUID player = UUID.randomUUID();
-    private int tickOnGround;
-    private int tickOffGround;
-    private int skinId;
+    boolean isInFlight();
 
-    @Override
-    public void sync() {
-        DalekModFlyPanel.NETWORK.send(PacketDistributor.ALL.noArg(), new SyncFlightPacket(writeNBT()));
-    }
+    void setInFlight(boolean bl);
 
-    @Override
-    public CompoundNBT writeNBT() {
-        CompoundNBT tag = new CompoundNBT();
-        tag.putBoolean("isInFlight", this.getInFlight());
-        tag.putInt("tardisId", this.getTardisId());
-        tag.putFloat("rotation", this.getRotation());
-        tag.putLong("tardisPos", this.getTardisPos().asLong());
-        tag.putInt("tickOnGround", this.getTickOnGround());
-        tag.putInt("tickOffGround", this.getTickOffGround());
-        tag.putUUID("player", this.getPlayer());
-        tag.putInt("skinId", this.getSkinId());
-        return tag;
-    }
+    int getTardisId();
 
-    @Override
-    public void readNBT(CompoundNBT tag) {
-        this.setInFlight(tag.getBoolean("isInFlight"));
-        this.setTardisId(tag.getInt("tardisId"));
-        this.setRotation(tag.getFloat("rotation"));
-        this.setTardisPos(BlockPos.of(tag.getLong("tardisPos")));
-        this.setTickOnGround(tag.getInt("tickOnGround"));
-        this.setTickOffGround(tag.getInt("tickOffGround"));
-        this.setPlayer(tag.getUUID("player"));
-        this.setSkinId(tag.getInt("skinId"));
-    }
+    void setTardisId(int i);
 
-    @Override
-    public boolean getInFlight() {
-        return isInFlight;
-    }
+    void setInteriorPos(BlockPos bp);
 
-    @Override
-    public void setInFlight(boolean bl) {
-        isInFlight = bl;
-    }
+    BlockPos getInteriorPos();
 
-    @Override
-    public int getTardisId() {
-        return tardisId;
-    }
+    float getRotation();
 
-    @Override
-    public void setTardisId(int i) {
-        tardisId = i;
-    }
+    void setRotation(float f);
 
-    @Override
-    public void setTardisPos(BlockPos bp) {
-        tardisPos = bp;
-    }
+    void setTickOnGround(int i);
+    int getTickOnGround();
 
-
-    @Override
-    public BlockPos getTardisPos() {
-        return tardisPos;
-    }
-
-
-    @Override
-    public float getRotation() {
-        return rotation;
-    }
-
-    @Override
-    public void setRotation(float f) {
-        rotation = f;
-    }
-
-    @Override
-    public void setTickOnGround(int i) {
-        tickOnGround = i;
-    }
-    @Override
-    public int getTickOnGround() {
-        return tickOnGround;
-    }
-
-    @Override
-    public int getTickOffGround() {
-        return tickOffGround;
-    }
-
-    @Override
-    public void setTickOffGround(int i) {
-        tickOffGround = i;
-    }
-
-    @Override
-    public UUID getPlayer() {
-        return player;
-    }
-
-    @Override
-    public void setPlayer(UUID uuid) {
-        player = uuid;
-    }
-
-    @Override
-    public int getSkinId() {
-        return skinId;
-    }
-
-    @Override
-    public void setSkinId(int i) {
-        skinId = i;
-    }
+    int getTickOffGround();
+    void setTickOffGround(int i);
 }

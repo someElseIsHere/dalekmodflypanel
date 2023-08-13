@@ -1,4 +1,4 @@
-package org.theplaceholder.dalekmodflypanel.utils;
+package org.theplaceholder.dalekmodflypanel.util;
 
 import com.swdteam.common.init.DMBlocks;
 import com.swdteam.common.init.DMDimensions;
@@ -13,14 +13,16 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import org.theplaceholder.dalekmodflypanel.capability.ITardisCapability;
-import org.theplaceholder.dalekmodflypanel.capability.TardisProvider;
+import org.theplaceholder.dalekmodflypanel.capability.SyncTardisPacket;
+import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
+
+import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapability;
 
 public class TardisFlightUtils {
     public static void stopPlayerFlight(PlayerEntity player) {
-        ITardisCapability capa = player.getCapability(TardisProvider.TARDIS_CAPABILITY).orElse(null);
-        if (!capa.getInFlight()) return;
+        TardisCapability capa = getTardisCapability(player);
+        if (!capa.isInFlight()) return;
         BlockPos playerPos = player.blockPosition();
         TardisData tardisData = DMTardis.getTardis(capa.getTardisId());
         ServerWorld playerWorld = (ServerWorld) player.level;
@@ -41,19 +43,19 @@ public class TardisFlightUtils {
         tardisTileEntity.setChanged();
         capa.setInFlight(false);
         capa.setTickOnGround(0);
-        capa.sync();
+        SyncTardisPacket.sync(player.getUUID(), capa);
 
         tardisTileEntity.setRotation(capa.getRotation());
         tardisData.setCurrentLocation(playerPos, playerWorld.dimension());
 
-        teleportPlayer((ServerPlayerEntity) player, DMDimensions.TARDIS, capa.getTardisPos(), 0);
+        teleportPlayer((ServerPlayerEntity) player, DMDimensions.TARDIS, capa.getInteriorPos(), 0);
 
         TardisSaveHandler.saveTardisData(tardisData);
     }
 
     public static void startPlayerFlight(PlayerEntity player) {
-        ITardisCapability capa = player.getCapability(TardisProvider.TARDIS_CAPABILITY).orElse(null);
-        if (capa.getInFlight()) return;
+        TardisCapability capa = getTardisCapability(player);
+        if (capa.isInFlight()) return;
         BlockPos interiorPos = player.blockPosition();
         BlockPos exteriorPos = DMTardis.getTardisFromInteriorPos(interiorPos).getCurrentLocation().getBlockPosition();
         TardisData tardisData = DMTardis.getTardisFromInteriorPos(interiorPos);
@@ -74,10 +76,9 @@ public class TardisFlightUtils {
 
         capa.setInFlight(true);
         capa.setTardisId(tardisData.getGlobalID());
-        capa.setTardisPos(interiorPos);
+        capa.setInteriorPos(interiorPos);
         capa.setRotation(rotation);
-        capa.setPlayer(player.getUUID());
-        capa.sync();
+        SyncTardisPacket.sync(player.getUUID(), capa);
 
         exteriorWorld.setBlock(exteriorPos, Blocks.AIR.defaultBlockState(), 3);
 

@@ -1,45 +1,24 @@
-package org.theplaceholder.dalekmodflypanel.capability;
+package org.theplaceholder.dalekmodflypanel.event;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.theplaceholder.dalekmodflypanel.DalekModFlyPanel;
+import org.theplaceholder.dalekmodflypanel.capability.SyncTardisPacket;
+import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 
-import static org.theplaceholder.dalekmodflypanel.utils.TardisFlightUtils.stopPlayerFlight;
-import static org.theplaceholder.dalekmodflypanel.utils.TardisUtils.getTardisCapability;
-import static org.theplaceholder.dalekmodflypanel.utils.TardisUtils.isInFlightMode;
+import static org.theplaceholder.dalekmodflypanel.util.TardisFlightUtils.stopPlayerFlight;
+import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapability;
+import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.isInFlightMode;
 
 public class TardisHandler {
-
-    @SubscribeEvent
-    public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof PlayerEntity) {
-            event.addCapability(DalekModFlyPanel.TARDIS_CAP, new TardisProvider());
-        }
-    }
-
-    @SubscribeEvent
-    public void onClone(PlayerEvent.Clone event){
-        TardisCapability oldCap = getTardisCapability(event.getOriginal());
-        TardisCapability newCap = getTardisCapability(event.getPlayer());
-        newCap.setInFlight(oldCap.getInFlight());
-        newCap.setTardisId(oldCap.getTardisId());
-        newCap.setTardisPos(oldCap.getTardisPos());
-        newCap.setTickOnGround(oldCap.getTickOnGround());
-        newCap.setTickOffGround(oldCap.getTickOffGround());
-        newCap.setRotation(oldCap.getRotation());
-        newCap.sync();
-    }
-
     @SubscribeEvent
     public static void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
+        if (event.getEntity().level.isClientSide)
+            return;
         if (event.getEntity() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) event.getEntity();
             if (isInFlightMode(player)) {
@@ -52,7 +31,6 @@ public class TardisHandler {
 
                     capability.setTickOnGround(0);
                     capability.setTickOffGround(capability.getTickOffGround() + 1);
-                    capability.sync();
                 }else{
                     capability.setTickOnGround(capability.getTickOnGround() + 1);
                     if (capability.getTickOnGround() >= 40 && player.isShiftKeyDown()){
@@ -60,18 +38,23 @@ public class TardisHandler {
                     }
                     capability.setTickOffGround(0);
                 }
+                SyncTardisPacket.sync(player.getUUID(), capability);
             }
         }
     }
 
     @SubscribeEvent
-    public static void onHurt(LivingHurtEvent e) {
-        if (e.getEntity() instanceof PlayerEntity && isInFlightMode((PlayerEntity)e.getEntity()))
-            e.setCanceled(true);
+    public static void onHurt(LivingHurtEvent event) {
+        if (event.getEntity().level.isClientSide)
+            return;
+        if (event.getEntity() instanceof PlayerEntity && isInFlightMode((PlayerEntity)event.getEntity()))
+            event.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void deathEvent(LivingDeathEvent e) {
+        if (e.getEntity().level.isClientSide)
+            return;
         if (e.getEntity() instanceof PlayerEntity && isInFlightMode((PlayerEntity)e.getEntity()))
             stopPlayerFlight((PlayerEntity)e.getEntity());
         if (e.getEntity() instanceof PlayerEntity && isInFlightMode((PlayerEntity)e.getEntity()))
@@ -80,18 +63,24 @@ public class TardisHandler {
 
     @SubscribeEvent
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent e) {
+        if (e.getEntity().level.isClientSide)
+            return;
         if (isInFlightMode(e.getPlayer()))
             stopPlayerFlight(e.getPlayer());
     }
 
     @SubscribeEvent
     public static void playerInteract(PlayerInteractEvent e) {
+        if (e.getEntity().level.isClientSide)
+            return;
         if (isInFlightMode(e.getPlayer()))
             e.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void playerConnect(PlayerEvent.PlayerLoggedInEvent e) {
+        if (e.getEntity().level.isClientSide)
+            return;
         if (isInFlightMode(e.getPlayer()))
             stopPlayerFlight(e.getPlayer());
     }
