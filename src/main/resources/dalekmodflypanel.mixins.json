@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "dalekmodflypanel.refmap.json",
   "mixins": [
+    "FlightLeverBlockMixin",
     "TardisDataMixin"
   ],
   "client": [

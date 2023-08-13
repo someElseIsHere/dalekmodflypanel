@@ -2,19 +2,21 @@ package org.theplaceholder.dalekmodflypanel.mixin;
 
 import com.swdteam.common.tardis.TardisData;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
 
-@Mixin(TardisData.class)
+@Mixin(value = TardisData.class, remap = false)
 public class TardisDataMixin implements ITardisData {
-    private boolean inFlightMode;
+    @Unique
+    private boolean dalekmodflypanel$inFlightMode;
 
     @Override
     public void dalekmodflypanel$setInFlightMode(boolean inFlightMode) {
-        this.inFlightMode = inFlightMode;
+        this.dalekmodflypanel$inFlightMode = inFlightMode;
     }
 
     @Override
     public boolean dalekmodflypanel$isInFlightMode() {
-        return inFlightMode;
+        return dalekmodflypanel$inFlightMode;
     }
 }

@@ -19,41 +19,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.isOnGround;
+import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.onGround;
 
 public class RenderPlayerTardis {
     private static final Map<UUID, Float> playerBobMap = new HashMap<>();
+    private static final Map<UUID, Float> playerBobMapLast = new HashMap<>();
     @SubscribeEvent
     public void guiOverlayEventPre(final RenderGameOverlayEvent.Pre e) {
-        TardisFlightDataManager.TardisFlightData data = TardisFlightDataManager.getPlayerTardisFlightData(Minecraft.getInstance().player.getUUID());
+        ClientTardisFlightDataManager.TardisFlightData data = ClientTardisFlightDataManager.getPlayerTardisFlightData(Minecraft.getInstance().player.getUUID());
         if (data != null && data.inFlightMode) {
-            if (e.getType() == RenderGameOverlayEvent.ElementType.FOOD) {
-                e.setCanceled(true);
-            }
-            if (e.getType() == RenderGameOverlayEvent.ElementType.HEALTH) {
-                e.setCanceled(true);
-            }
-            if (e.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
-                e.setCanceled(true);
-            }
-            if (e.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
-                e.setCanceled(true);
-            }
-            if (e.getType() == RenderGameOverlayEvent.ElementType.AIR) {
-                e.setCanceled(true);
-            }
-            if (e.getType() == RenderGameOverlayEvent.ElementType.ARMOR) {
-                e.setCanceled(true);
-            }
-            if (e.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
-                e.setCanceled(true);
-            }
+            e.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     public static void renderPlayerPreEvent(final RenderPlayerEvent.Pre e) {
-        TardisFlightDataManager.TardisFlightData data = TardisFlightDataManager.getPlayerTardisFlightData(e.getPlayer().getUUID());
+        ClientTardisFlightDataManager.TardisFlightData data = ClientTardisFlightDataManager.getPlayerTardisFlightData(e.getPlayer().getUUID());
         if (data != null && data.inFlightMode) {
             TardisData tardisData = ClientTardisCache.getTardisData(data.tardisId);
             if (tardisData == null)
@@ -66,34 +47,27 @@ public class RenderPlayerTardis {
     }
 
     public static void renderTardis(JSONModel MODEL_TARDIS, IVertexBuilder ivertexbuilder, PlayerEntity player, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, float partialTicks, int combinedLightIn, int combinedOverlayIn) {
-        TardisFlightDataManager.TardisFlightData data = TardisFlightDataManager.getPlayerTardisFlightData(player.getUUID());
+        ClientTardisFlightDataManager.TardisFlightData data = ClientTardisFlightDataManager.getPlayerTardisFlightData(player.getUUID());
         matrixStack.pushPose();
-        matrixStack.translate(0.0, 0.01, 0.0);
-        matrixStack.translate(0.0, 1.5, 0.0);
-        matrixStack.translate(0.0, 1.5, 0.0);
-        float scale = MODEL_TARDIS.getModelData().getModel().modelScale;
-        matrixStack.scale(scale, scale, scale);
-        matrixStack.translate(0.0, -1.5, 0.0);
-        matrixStack.translate(0.0, -0.01, 0.0);
+        matrixStack.translate(0.0, 1.5 - 0.01, 0.0);
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(data.rotation));
 
-        if (!playerBobMap.containsKey(player.getUUID()) || playerBobMap.get(player.getUUID()) == null) {
-            playerBobMap.put(player.getUUID(), 1f);
-        }
+        playerBobMap.putIfAbsent(player.getUUID(), 1f);
+        playerBobMapLast.putIfAbsent(player.getUUID(), 1f);
 
-        if (!isOnGround(player)) {
-            float f = playerBobMap.get(player.getUUID());
-            f = (float) (Math.cos((double)(f + partialTicks) * 0.05) * 0.5 + 0.5);
-            f = f * f;
-            playerBobMap.put(player.getUUID(), f);
-        } else {
-            playerBobMap.put(player.getUUID(), 1f);
-        }
+        float bobValue = !onGround(player)
+                ? (float) ((Math.cos(data.tickOffGround + partialTicks) * 0.05) * 0.5 + 0.5) * (float) ((Math.cos(data.tickOffGround + partialTicks) * 0.05) * 0.5 + 0.5)
+                : (float) Math.min(1.0F, playerBobMap.get(player.getUUID()) + (playerBobMap.get(player.getUUID()) - (playerBobMapLast.get(player.getUUID()) - 0.001)));
+
+        playerBobMap.put(player.getUUID(), bobValue);
+        playerBobMapLast.put(player.getUUID(), playerBobMap.get(player.getUUID()));
 
         matrixStack.translate(0.0, playerBobMap.get(player.getUUID()) - 1.0F, 0.0);
-        MODEL_TARDIS.getModelData().getModel().renderToBuffer(matrixStack, iRenderTypeBuffer, ivertexbuilder, combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
+        JSONModel.ModelInformation modelData = MODEL_TARDIS.getModelData();
+        modelData.getModel().renderToBuffer(matrixStack, iRenderTypeBuffer, ivertexbuilder, combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
 
         matrixStack.popPose();
+
     }
 }

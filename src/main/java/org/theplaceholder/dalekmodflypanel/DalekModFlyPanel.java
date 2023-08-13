@@ -3,7 +3,6 @@ package org.theplaceholder.dalekmodflypanel;
 import com.swdteam.common.init.DMTabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;

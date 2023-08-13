@@ -1,6 +1,7 @@
 package org.theplaceholder.dalekmodflypanel.event;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -23,8 +24,8 @@ public class TardisHandler {
             if (isInFlightMode(player)) {
                 TardisCapability capability = getTardisCapability(player);
 
-                if (!isOnGround(player)){
-                    capability.setRotation(capability.getRotation() + 2);
+                if (!onGround(player)){
+                    capability.setRotation(capability.getRotation() + 3);
                     if (capability.getRotation() >= 360)
                         capability.setRotation(0);
 
@@ -33,7 +34,7 @@ public class TardisHandler {
                 }else{
                     capability.setTickOnGround(capability.getTickOnGround() + 1);
                     if (capability.getTickOnGround() >= 40 && player.isShiftKeyDown()){
-                        stopPlayerFlight(player);
+                        stopPlayerFlight((ServerPlayerEntity) player);
                     }
                     capability.setTickOffGround(0);
                 }
@@ -55,7 +56,7 @@ public class TardisHandler {
         if (e.getEntity().level.isClientSide)
             return;
         if (e.getEntity() instanceof PlayerEntity && isInFlightMode((PlayerEntity)e.getEntity()))
-            stopPlayerFlight((PlayerEntity)e.getEntity());
+            stopPlayerFlight((ServerPlayerEntity) e.getEntity());
         if (e.getEntity() instanceof PlayerEntity && isInFlightMode((PlayerEntity)e.getEntity()))
             e.setCanceled(true);
     }
@@ -65,7 +66,7 @@ public class TardisHandler {
         if (e.getEntity().level.isClientSide)
             return;
         if (isInFlightMode(e.getPlayer()))
-            stopPlayerFlight(e.getPlayer());
+            stopPlayerFlight((ServerPlayerEntity) e.getPlayer());
     }
 
     @SubscribeEvent
@@ -81,6 +82,6 @@ public class TardisHandler {
         if (e.getEntity().level.isClientSide)
             return;
         if (isInFlightMode(e.getPlayer()))
-            stopPlayerFlight(e.getPlayer());
+            stopPlayerFlight((ServerPlayerEntity) e.getPlayer());
     }
 }

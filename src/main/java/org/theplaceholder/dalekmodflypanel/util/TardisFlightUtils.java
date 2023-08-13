@@ -21,7 +21,7 @@ import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapability;
 
 public class TardisFlightUtils {
-    public static void stopPlayerFlight(PlayerEntity player) {
+    public static void stopPlayerFlight(ServerPlayerEntity player) {
         TardisCapability capa = getTardisCapability(player);
         if (!capa.isInFlight()) return;
         BlockPos playerPos = player.blockPosition();
@@ -29,14 +29,6 @@ public class TardisFlightUtils {
         ServerWorld playerWorld = (ServerWorld) player.level;
 
         ((ITardisData) tardisData).dalekmodflypanel$setInFlightMode(false);
-
-        player.setInvulnerable(false);
-        player.abilities.mayfly = false;
-        player.abilities.flying = false;
-        player.eyeHeight = 1.6f;
-        player.setInvisible(false);
-        player.onUpdateAbilities();
-        player.setForcedPose(null);
 
         playerWorld.setBlock(playerPos, DMBlocks.TARDIS.get().defaultBlockState(), 3);
         TardisTileEntity tardisTileEntity = ((TardisTileEntity) playerWorld.getBlockEntity(playerPos));
@@ -50,12 +42,20 @@ public class TardisFlightUtils {
         tardisTileEntity.setRotation(capa.getRotation());
         tardisData.setCurrentLocation(playerPos, playerWorld.dimension());
 
-        teleportPlayer((ServerPlayerEntity) player, DMDimensions.TARDIS, capa.getInteriorPos(), 0);
+        teleportPlayer(player, DMDimensions.TARDIS, capa.getInteriorPos(), 0);
+
+        player.setInvulnerable(false);
+        player.abilities.mayfly = false;
+        player.abilities.flying = false;
+        player.abilities.mayBuild = true;
+        player.onUpdateAbilities();
+        player.setInvisible(false);
+        player.setForcedPose(null);
 
         TardisSaveHandler.saveTardisData(tardisData);
     }
 
-    public static void startPlayerFlight(PlayerEntity player) {
+    public static void startPlayerFlight(ServerPlayerEntity player) {
         TardisCapability capa = getTardisCapability(player);
         if (capa.isInFlight()) return;
         BlockPos interiorPos = player.blockPosition();
@@ -69,12 +69,6 @@ public class TardisFlightUtils {
 
         ((ITardisData) tardisData).dalekmodflypanel$setInFlightMode(true);
 
-        player.setInvulnerable(true);
-        player.abilities.mayfly = true;
-        player.abilities.flying = true;
-        player.setInvisible(true);
-        player.setForcedPose(Pose.STANDING);
-
         capa.setInFlight(true);
         capa.setTardisId(tardisData.getGlobalID());
         capa.setInteriorPos(interiorPos);
@@ -83,7 +77,15 @@ public class TardisFlightUtils {
 
         exteriorWorld.setBlock(exteriorPos, Blocks.AIR.defaultBlockState(), 3);
 
-        teleportPlayer((ServerPlayerEntity) player, tardisData.getCurrentLocation().dimensionWorldKey(), exteriorPos, rotation);
+        teleportPlayer(player, tardisData.getCurrentLocation().dimensionWorldKey(), exteriorPos, rotation);
+
+        player.setInvulnerable(true);
+        player.abilities.mayfly = true;
+        player.abilities.flying = true;
+        player.abilities.mayBuild = false;
+        player.setInvisible(true);
+        player.setForcedPose(Pose.STANDING);
+        player.onUpdateAbilities();
 
         TardisSaveHandler.saveTardisData(tardisData);
     }

@@ -1,6 +1,9 @@
 package org.theplaceholder.dalekmodflypanel.util;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapabilityManager;
 
@@ -16,9 +19,9 @@ public class TardisUtils {
         return capa.isInFlight();
     }
 
-    public static boolean isOnGround(PlayerEntity player) {
-        if (player == null)
-            return false;
-        return !player.level.getBlockState(player.blockPosition().below()).getBlockState().isAir();
+    public static boolean onGround(PlayerEntity player) {
+        final BlockPos pos = new BlockPos(player.blockPosition().getX(), Math.ceil(player.position().y) - 1.0, player.blockPosition().getZ());
+        final BlockState blip = player.level.getBlockState(pos);
+        return blip.getBlock() != Blocks.AIR;
     }
 }

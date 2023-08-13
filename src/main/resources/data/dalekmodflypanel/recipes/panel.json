@@ -1,7 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "   ",
     "NPF",
     "CCC"
   ],
@@ -10,17 +9,17 @@
       "item": "minecraft:feather"
     },
     "N": {
-      "tag": "minecraft:nether_star"
+      "item": "minecraft:nether_star"
     },
     "P": {
-      "tag": "dalekmod:coord_panel"
+      "item": "dalekmod:coord_panel"
     },
     "C": {
-      "item": "forge:circuits/basic"
+      "tag": "forge:circuits/basic"
     }
   },
   "result": {
-    "item": "",
+    "item": "dalekmodflypanel:panel",
     "count": 1
   }
 }
