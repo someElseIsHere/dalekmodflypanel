@@ -1,5 +1,7 @@
 package org.theplaceholder.dalekmodflypanel.capability;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.PointOfView;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -47,7 +49,14 @@ public class SyncTardisPacket {
 
     public static void handle(SyncTardisPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TardisFlightDataManager.setPlayerTardisFlightData(msg.player, new TardisFlightDataManager.TardisFlightData(msg.tardisId, msg.isInFlight, msg.rotation, msg.tickOnGround, msg.tickOffGround));
+            if (msg.isInFlight){
+                Minecraft.getInstance().options.setCameraType(PointOfView.THIRD_PERSON_BACK);
+                TardisFlightDataManager.setPlayerTardisFlightData(msg.player, new TardisFlightDataManager.TardisFlightData(msg.tardisId, msg.isInFlight, msg.rotation, msg.tickOnGround, msg.tickOffGround));
+            }else {
+                Minecraft.getInstance().options.setCameraType(PointOfView.FIRST_PERSON);
+                TardisFlightDataManager.removePlayerTardisFlightData(msg.player);
+            }
+            ctx.get().setPacketHandled(true);
         });
     }
 

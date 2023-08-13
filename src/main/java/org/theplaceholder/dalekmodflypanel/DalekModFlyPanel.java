@@ -3,6 +3,7 @@ package org.theplaceholder.dalekmodflypanel;
 import com.swdteam.common.init.DMTabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -40,18 +41,17 @@ public class DalekModFlyPanel {
     public DalekModFlyPanel() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         //BLOCK/ITEM REGISTRATION
-        RegistryObject<Block> BLOCK = BLOCKS.register("tardis_flight_panel", () -> new FlightPanelBlock(Block.Properties.of(Material.STONE)));
+        RegistryObject<Block> BLOCK = BLOCKS.register("panel", () -> new FlightPanelBlock(Block.Properties.of(Material.STONE)));
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        ITEMS.register("tardis_flight_panel", () -> new BlockItem(BLOCK.get(), new Item.Properties().tab(DMTabs.DM_TARDIS)));
+        ITEMS.register("panel", () -> new BlockItem(BLOCK.get(), new Item.Properties().tab(DMTabs.DM_TARDIS)));
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
 
         //REGISTER CAPABILITY EVENT
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(TardisCapabilityManager::attach);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(TardisCapabilityManager::cloned);
+        MinecraftForge.EVENT_BUS.register(TardisCapabilityManager.class);
 
         //REGISTER EVENT HANDLERS
-        MinecraftForge.EVENT_BUS.register(new TardisHandler());
-        DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> RenderPlayerTardis::new);
+        MinecraftForge.EVENT_BUS.register(TardisHandler.class);
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.register(RenderPlayerTardis.class));
     }
 
     public void setup(FMLCommonSetupEvent event){

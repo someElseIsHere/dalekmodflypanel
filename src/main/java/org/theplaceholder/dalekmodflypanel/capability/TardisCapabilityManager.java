@@ -8,6 +8,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.theplaceholder.dalekmodflypanel.util.capability.SimpleCapabilityStorage;
 import org.theplaceholder.dalekmodflypanel.util.capability.SimpleVolatileCapabilityProvider;
 
@@ -23,12 +24,15 @@ public class TardisCapabilityManager {
         CapabilityManager.INSTANCE.register(TardisCapability.class, SimpleCapabilityStorage.create(() -> CAPABILITY), TardisCapabilityImpl::new);
     }
 
+    @SubscribeEvent
     public static void attach(AttachCapabilitiesEvent<Entity> event){
         if (event.getObject() instanceof PlayerEntity) {
-            event.addCapability(ID, SimpleVolatileCapabilityProvider.from(CAPABILITY, () -> (TardisCapability) event.getObject()));
+            TardisCapability capability = new TardisCapabilityImpl();
+            event.addCapability(ID, SimpleVolatileCapabilityProvider.from(CAPABILITY, () -> capability));
         }
     }
 
+    @SubscribeEvent
     public static void cloned(PlayerEvent.Clone event){
         event.getOriginal().getCapability(CAPABILITY).ifPresent(oldCap -> {
             event.getPlayer().getCapability(CAPABILITY).ifPresent(newCap -> {

@@ -1,5 +1,4 @@
 {
-  "block.dalekmodflypanel.tardis_flight_panel": "Tardis Flight Panel",
-  "message.dalekmodflypanel.tardis_flight_panel.not_in_tardis": "You must be in a Tardis to use this!",
-  "message.dalekmodflypanel.tardis_flight_panel.not_enough_space": "Not enough space to take off!"
+  "block.dalekmodflypanel.panel": "Tardis Flight Panel",
+  "message.dalekmodflypanel.panel.not_in_tardis": "You must be in a Tardis to use this!"
 }

@@ -7,6 +7,7 @@ import com.swdteam.common.tardis.TardisData;
 import com.swdteam.common.tardis.TardisSaveHandler;
 import com.swdteam.common.tileentity.TardisTileEntity;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Pose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.RegistryKey;
@@ -35,6 +36,7 @@ public class TardisFlightUtils {
         player.eyeHeight = 1.6f;
         player.setInvisible(false);
         player.onUpdateAbilities();
+        player.setForcedPose(null);
 
         playerWorld.setBlock(playerPos, DMBlocks.TARDIS.get().defaultBlockState(), 3);
         TardisTileEntity tardisTileEntity = ((TardisTileEntity) playerWorld.getBlockEntity(playerPos));
@@ -70,9 +72,8 @@ public class TardisFlightUtils {
         player.setInvulnerable(true);
         player.abilities.mayfly = true;
         player.abilities.flying = true;
-        player.eyeHeight = 0.0f;
         player.setInvisible(true);
-        player.onUpdateAbilities();
+        player.setForcedPose(Pose.STANDING);
 
         capa.setInFlight(true);
         capa.setTardisId(tardisData.getGlobalID());

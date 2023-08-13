@@ -15,4 +15,10 @@ public class TardisUtils {
         TardisCapability capa = getTardisCapability(player);
         return capa.isInFlight();
     }
+
+    public static boolean isOnGround(PlayerEntity player) {
+        if (player == null)
+            return false;
+        return !player.level.getBlockState(player.blockPosition().below()).getBlockState().isAir();
+    }
 }

@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.isOnGround;
+
 public class RenderPlayerTardis {
     private static final Map<UUID, Float> playerBobMap = new HashMap<>();
     @SubscribeEvent
@@ -66,7 +68,7 @@ public class RenderPlayerTardis {
     public static void renderTardis(JSONModel MODEL_TARDIS, IVertexBuilder ivertexbuilder, PlayerEntity player, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, float partialTicks, int combinedLightIn, int combinedOverlayIn) {
         TardisFlightDataManager.TardisFlightData data = TardisFlightDataManager.getPlayerTardisFlightData(player.getUUID());
         matrixStack.pushPose();
-        matrixStack.translate(0.5, 0.01, 0.5);
+        matrixStack.translate(0.0, 0.01, 0.0);
         matrixStack.translate(0.0, 1.5, 0.0);
         matrixStack.translate(0.0, 1.5, 0.0);
         float scale = MODEL_TARDIS.getModelData().getModel().modelScale;
@@ -76,7 +78,11 @@ public class RenderPlayerTardis {
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(data.rotation));
 
-        if (!player.isOnGround() || !playerBobMap.containsKey(player.getUUID())) {
+        if (!playerBobMap.containsKey(player.getUUID()) || playerBobMap.get(player.getUUID()) == null) {
+            playerBobMap.put(player.getUUID(), 1f);
+        }
+
+        if (!isOnGround(player)) {
             float f = playerBobMap.get(player.getUUID());
             f = (float) (Math.cos((double)(f + partialTicks) * 0.05) * 0.5 + 0.5);
             f = f * f;

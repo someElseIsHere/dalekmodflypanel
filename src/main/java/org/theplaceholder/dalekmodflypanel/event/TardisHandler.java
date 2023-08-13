@@ -11,8 +11,7 @@ import org.theplaceholder.dalekmodflypanel.capability.SyncTardisPacket;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 
 import static org.theplaceholder.dalekmodflypanel.util.TardisFlightUtils.stopPlayerFlight;
-import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapability;
-import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.isInFlightMode;
+import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.*;
 
 public class TardisHandler {
     @SubscribeEvent
@@ -24,8 +23,8 @@ public class TardisHandler {
             if (isInFlightMode(player)) {
                 TardisCapability capability = getTardisCapability(player);
 
-                if (!player.isOnGround()){
-                    capability.setRotation(capability.getRotation() + 1);
+                if (!isOnGround(player)){
+                    capability.setRotation(capability.getRotation() + 2);
                     if (capability.getRotation() >= 360)
                         capability.setRotation(0);
 

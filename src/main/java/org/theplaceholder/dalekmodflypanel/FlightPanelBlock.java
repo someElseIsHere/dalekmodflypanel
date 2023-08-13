@@ -28,7 +28,7 @@ public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockToo
 
     @Override
     public ITextComponent getName(BlockState blockState, BlockPos blockPos, Vector3d vector3d, PlayerEntity playerEntity) {
-        return new TranslationTextComponent("block.dalekmodflypanel.tardis_flight_panel");
+        return new TranslationTextComponent("block.dalekmodflypanel.panel");
     }
 
     @Override
@@ -37,7 +37,7 @@ public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockToo
             if (world.dimension() == DMDimensions.TARDIS) {
                 TardisFlightUtils.startPlayerFlight(playerEntity);
             }else{
-                playerEntity.displayClientMessage(new TranslationTextComponent("message.dalekmodflypanel.tardis_flight_panel.not_in_tardis").withStyle(TextFormatting.RED), true);
+                playerEntity.displayClientMessage(new TranslationTextComponent("message.dalekmodflypanel.panel.not_in_tardis").withStyle(TextFormatting.RED), true);
                 return ActionResultType.SUCCESS;
             }
         }
@@ -51,6 +51,6 @@ public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockToo
 
     @Override
     public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
-        return Block.box(0, 0, 0, 16, 0.5, 16);
+        return Block.box(0, 0, 0, 16, 1, 16);
     }
 }

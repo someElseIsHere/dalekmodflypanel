@@ -15,6 +15,10 @@ public class TardisFlightDataManager {
         return playerTardisFlightDataMap.get(uuid);
     }
 
+    public static void removePlayerTardisFlightData(UUID uuid) {
+        playerTardisFlightDataMap.remove(uuid);
+    }
+
     public static class TardisFlightData {
         public boolean inFlightMode;
         public float rotation;

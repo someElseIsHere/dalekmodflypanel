@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "NPF",
+    "CCC"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:feather"
+    },
+    "N": {
+      "tag": "minecraft:nether_star"
+    },
+    "P": {
+      "tag": "dalekmod:coord_panel"
+    },
+    "C": {
+      "item": "forge:circuits/basic"
+    }
+  },
+  "result": {
+    "item": "",
+    "count": 1
+  }
+}
