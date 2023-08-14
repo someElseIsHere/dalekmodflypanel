@@ -12,7 +12,8 @@ import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.isInFlightMod
 @Mixin(value = ItemEntity.class)
 public class ItemEntityMixin {
     @Inject(method = "playerTouch", at = @At("HEAD"), cancellable = true)
-    private void playerTouchMixin(PlayerEntity player, CallbackInfo ci) {
+    private void playerTouch(PlayerEntity player, CallbackInfo ci) {
+        if (player.level.isClientSide) return;
         if (isInFlightMode(player)) {
             ci.cancel();
         }

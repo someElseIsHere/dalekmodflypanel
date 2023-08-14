@@ -45,7 +45,7 @@ public class DMFPEventHandler {
                     TardisData tardisData = DMTardis.getTardis(capability.getTardisId());
 
                     if (player.abilities.flying){
-                        tardisData.addFuel(-0.025);
+                        tardisData.addFuel(-0.0125);
                         if(capability.getTickOffGround() % 27.5 <= 1) {
                             player.level.playSound(null, player.blockPosition(), DMFPSounds.TARDIS_FLY.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
                         }

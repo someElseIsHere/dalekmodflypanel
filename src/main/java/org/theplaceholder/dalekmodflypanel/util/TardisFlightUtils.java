@@ -9,11 +9,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.common.ForgeMod;
 import org.theplaceholder.dalekmodflypanel.packet.SyncTardisPacket;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
@@ -23,8 +26,9 @@ import java.util.UUID;
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapability;
 
 public class TardisFlightUtils {
-    public static final String FLIGHT_SPEED_MODIFIER_NAME = "e3c5b4a0-9c4d-11ea-bb37-0242ac130002";
-    public static final UUID FLIGHT_SPEED_MODIFIER = UUID.fromString(FLIGHT_SPEED_MODIFIER_NAME);
+    public static final String MOUVEMENT_SPEED_NAME = "e3c5b4a0-9c4d-11ea-bb37-0242ac130002";
+    public static final UUID MOUVEMENT_SPEED_UUID = UUID.fromString(MOUVEMENT_SPEED_NAME);
+    public static final AttributeModifier MOUVEMENT_SPEED_MODIFIER = new AttributeModifier(MOUVEMENT_SPEED_UUID, MOUVEMENT_SPEED_NAME, -256, AttributeModifier.Operation.ADDITION);
 
     public static void stopPlayerFlight(ServerPlayerEntity player) {
         TardisCapability capa = getTardisCapability(player);
@@ -55,14 +59,14 @@ public class TardisFlightUtils {
         player.abilities.mayBuild = true;
         player.onUpdateAbilities();
         player.setInvisible(false);
-        player.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(FLIGHT_SPEED_MODIFIER);
+
+        player.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(MOUVEMENT_SPEED_UUID);
 
         ForgeIngameGui.renderCrosshairs = true;
         ForgeIngameGui.renderHotbar = true;
         ForgeIngameGui.renderHealth = true;
         ForgeIngameGui.renderExperiance = true;
         ForgeIngameGui.renderFood = true;
-        ForgeIngameGui.renderJumpBar = true;
         ForgeIngameGui.renderAir = true;
         ForgeIngameGui.renderArmor = true;
     }
@@ -94,18 +98,18 @@ public class TardisFlightUtils {
 
         player.setInvulnerable(true);
         player.abilities.mayfly = true;
+        player.abilities.flying = true;
         player.abilities.mayBuild = false;
         player.setInvisible(true);
         player.onUpdateAbilities();
 
-        player.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier(FLIGHT_SPEED_MODIFIER, FLIGHT_SPEED_MODIFIER_NAME, -256, AttributeModifier.Operation.ADDITION));
+        player.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(MOUVEMENT_SPEED_MODIFIER);
 
         ForgeIngameGui.renderCrosshairs = false;
         ForgeIngameGui.renderHotbar = false;
         ForgeIngameGui.renderHealth = false;
         ForgeIngameGui.renderExperiance = false;
         ForgeIngameGui.renderFood = false;
-        ForgeIngameGui.renderJumpBar = false;
         ForgeIngameGui.renderAir = false;
         ForgeIngameGui.renderArmor = false;
     }

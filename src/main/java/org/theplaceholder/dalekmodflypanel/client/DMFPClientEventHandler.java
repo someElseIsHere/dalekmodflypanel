@@ -12,9 +12,9 @@ import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.isInFlightMode;
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.onGround;
 
 public class DMFPClientEventHandler {
@@ -46,6 +45,11 @@ public class DMFPClientEventHandler {
                 renderTardis(modelTardis, vertexBuilder, e.getPlayer(), e.getMatrixStack(), e.getBuffers(), e.getLight(), e.getLight());
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onLogout(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+        ClientFlightData.playerTardisFlightDataMap = new HashMap<>();
     }
 
     @SubscribeEvent
