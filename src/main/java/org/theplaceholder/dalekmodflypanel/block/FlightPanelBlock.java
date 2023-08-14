@@ -3,7 +3,10 @@ package org.theplaceholder.dalekmodflypanel.block;
 import com.swdteam.common.block.IBlockTooltip;
 import com.swdteam.common.init.DMDimensions;
 import com.swdteam.common.init.DMTardis;
+import com.swdteam.common.tardis.Location;
 import com.swdteam.common.tardis.TardisData;
+import com.swdteam.common.tardis.TardisDoor;
+import com.swdteam.common.tileentity.TardisTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -41,7 +44,11 @@ public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockToo
             if (world.dimension() == DMDimensions.TARDIS) {
                 TardisData data = DMTardis.getTardisFromInteriorPos(blockPos);
                 if (data != null){
-                    if (!((ITardisData) data).dalekmodflypanel$isInFlightMode())
+                    Location location = data.getCurrentLocation();
+                    BlockPos pos = location.getBlockPosition();
+                    World level = world.getServer().getLevel(location.dimensionWorldKey());
+                    ((TardisTileEntity) level.getBlockEntity(pos)).closeDoor(TardisDoor.BOTH, TardisTileEntity.DoorSource.TARDIS);
+                    if (!data.isInFlight() && !((ITardisData) data).dalekmodflypanel$isInFlightMode())
                         TardisFlightUtils.startPlayerFlight((ServerPlayerEntity) playerEntity);
                 }
 
@@ -59,7 +66,7 @@ public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockToo
     }
 
     @Override
-    public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext selectionContext) {
+    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
         return Block.box(0, 0, 0, 16, 1, 16);
     }
 }

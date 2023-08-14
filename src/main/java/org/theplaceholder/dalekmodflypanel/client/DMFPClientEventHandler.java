@@ -54,7 +54,7 @@ public class DMFPClientEventHandler {
     public static void renderTardis(JSONModel MODEL_TARDIS, IVertexBuilder ivertexbuilder, PlayerEntity player, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         ClientFlightData.TardisFlightData data = ClientFlightData.getPlayerTardisFlightData(player.getUUID());
         matrixStack.pushPose();
-        matrixStack.translate(0.0, 0.5, 0.0);
+        matrixStack.translate(0.0, 2.5, 0.0);
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(data.rotation));
 
@@ -62,7 +62,7 @@ public class DMFPClientEventHandler {
         playerBobMapLast.putIfAbsent(player.getUUID(), 1f);
 
         float bobValue = !onGround(player)
-                ? (float) ((Math.cos(data.tickOffGround) * 0.01) * 10)
+                ? (float) (Math.cos(data.tickOffGround * 0.1f) * 0.5f) + 0.5f
                 : (float) Math.min(1.0F, playerBobMap.get(player.getUUID()) + (playerBobMap.get(player.getUUID()) - (playerBobMapLast.get(player.getUUID()) - 0.1)));
 
         playerBobMapLast.put(player.getUUID(), playerBobMap.get(player.getUUID()));

@@ -14,6 +14,7 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.client.gui.ForgeIngameGui;
 import org.theplaceholder.dalekmodflypanel.capability.SyncTardisPacket;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
@@ -48,7 +49,6 @@ public class TardisFlightUtils {
         tardisData.setCurrentLocation(playerPos, playerWorld.dimension());
 
         teleportPlayer(player, DMDimensions.TARDIS, capa.getInteriorPos(), 0);
-        TardisSaveHandler.saveTardisData(tardisData);
 
         player.setInvulnerable(false);
         player.abilities.mayfly = false;
@@ -57,6 +57,15 @@ public class TardisFlightUtils {
         player.onUpdateAbilities();
         player.setInvisible(false);
         player.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(FLIGHT_SPEED_MODIFIER);
+
+        ForgeIngameGui.renderCrosshairs = true;
+        ForgeIngameGui.renderHotbar = true;
+        ForgeIngameGui.renderHealth = true;
+        ForgeIngameGui.renderExperiance = true;
+        ForgeIngameGui.renderFood = true;
+        ForgeIngameGui.renderJumpBar = true;
+        ForgeIngameGui.renderAir = true;
+        ForgeIngameGui.renderArmor = true;
     }
 
     public static void startPlayerFlight(ServerPlayerEntity player) {
@@ -73,7 +82,6 @@ public class TardisFlightUtils {
 
         ((ITardisData) tardisData).dalekmodflypanel$setInFlightMode(true);
         tardisData.setDoorOpen(false);
-        TardisSaveHandler.saveTardisData(tardisData);
 
         capa.setInFlight(true);
         capa.setTardisId(tardisData.getGlobalID());
@@ -93,6 +101,15 @@ public class TardisFlightUtils {
         player.onUpdateAbilities();
 
         player.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier(FLIGHT_SPEED_MODIFIER, FLIGHT_SPEED_MODIFIER_NAME, -256, AttributeModifier.Operation.ADDITION));
+
+        ForgeIngameGui.renderCrosshairs = false;
+        ForgeIngameGui.renderHotbar = false;
+        ForgeIngameGui.renderHealth = false;
+        ForgeIngameGui.renderExperiance = false;
+        ForgeIngameGui.renderFood = false;
+        ForgeIngameGui.renderJumpBar = false;
+        ForgeIngameGui.renderAir = false;
+        ForgeIngameGui.renderArmor = false;
     }
 
     public static void teleportPlayer(ServerPlayerEntity entity, RegistryKey<World> destinationType, BlockPos destinationPos, float yRot) {

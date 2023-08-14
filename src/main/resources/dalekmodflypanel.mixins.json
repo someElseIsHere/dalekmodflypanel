@@ -5,11 +5,11 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "dalekmodflypanel.refmap.json",
   "mixins": [
+    "ItemEntityMixin",
     "dalekmod.FlightLeverBlockMixin",
     "dalekmod.TardisDataMixin"
   ],
   "client": [
-    "client.ForgeIngameGuiMixin",
     "client.GameSettingsMixin",
     "client.PlayerRendererMixin"
   ],

@@ -1,8 +1,13 @@
 package org.theplaceholder.dalekmodflypanel.event;
 
+import com.swdteam.common.init.DMTardis;
+import com.swdteam.common.tardis.TardisData;
+import com.swdteam.common.tardis.TardisSaveHandler;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -32,6 +37,14 @@ public class DMFPEventHandler {
 
                     capability.setTickOnGround(0);
                     capability.setTickOffGround(capability.getTickOffGround() + 1);
+
+                    TardisData tardisData = DMTardis.getTardis(capability.getTardisId());
+                    tardisData.addFuel(-0.1);
+                    if (tardisData.getFuel() <= 0) {
+                        player.abilities.mayfly = false;
+                        player.abilities.flying = false;
+                    }
+                    player.displayClientMessage(new TranslationTextComponent("message.dalekmodflypanel.fuel" + tardisData.getFuel()).withStyle(tardisData.getFuel() <= 0 ? TextFormatting.RED : TextFormatting.GREEN), true);
                 }else{
                     capability.setTickOnGround(capability.getTickOnGround() + 1);
                     if (capability.getTickOnGround() >= 40 && player.isShiftKeyDown()){
