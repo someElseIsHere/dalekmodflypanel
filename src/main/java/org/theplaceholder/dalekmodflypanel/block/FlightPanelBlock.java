@@ -1,7 +1,9 @@
-package org.theplaceholder.dalekmodflypanel;
+package org.theplaceholder.dalekmodflypanel.block;
 
 import com.swdteam.common.block.IBlockTooltip;
 import com.swdteam.common.init.DMDimensions;
+import com.swdteam.common.init.DMTardis;
+import com.swdteam.common.tardis.TardisData;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -20,6 +22,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
 import org.theplaceholder.dalekmodflypanel.util.TardisFlightUtils;
 
 public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockTooltip {
@@ -36,7 +39,12 @@ public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockToo
     public ActionResultType use(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult){
         if (!world.isClientSide) {
             if (world.dimension() == DMDimensions.TARDIS) {
-                TardisFlightUtils.startPlayerFlight((ServerPlayerEntity) playerEntity);
+                TardisData data = DMTardis.getTardisFromInteriorPos(blockPos);
+                if (data != null){
+                    if (!((ITardisData) data).dalekmodflypanel$isInFlightMode())
+                        TardisFlightUtils.startPlayerFlight((ServerPlayerEntity) playerEntity);
+                }
+
             }else{
                 playerEntity.displayClientMessage(new TranslationTextComponent("message.dalekmodflypanel.panel.not_in_tardis").withStyle(TextFormatting.RED), true);
                 return ActionResultType.SUCCESS;
@@ -51,7 +59,7 @@ public class FlightPanelBlock extends Block implements IWaterLoggable, IBlockToo
     }
 
     @Override
-    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
+    public VoxelShape getShape(BlockState blockState, IBlockReader iBlockReader, BlockPos blockPos, ISelectionContext selectionContext) {
         return Block.box(0, 0, 0, 16, 1, 16);
     }
 }

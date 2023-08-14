@@ -7,8 +7,8 @@ import com.swdteam.common.tardis.TardisData;
 import com.swdteam.common.tardis.TardisSaveHandler;
 import com.swdteam.common.tileentity.TardisTileEntity;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Pose;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
@@ -18,9 +18,14 @@ import org.theplaceholder.dalekmodflypanel.capability.SyncTardisPacket;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
 
+import java.util.UUID;
+
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapability;
 
 public class TardisFlightUtils {
+    public static final String FLIGHT_SPEED_MODIFIER_NAME = "e3c5b4a0-9c4d-11ea-bb37-0242ac130002";
+    public static final UUID FLIGHT_SPEED_MODIFIER = UUID.fromString(FLIGHT_SPEED_MODIFIER_NAME);
+
     public static void stopPlayerFlight(ServerPlayerEntity player) {
         TardisCapability capa = getTardisCapability(player);
         if (!capa.isInFlight()) return;
@@ -43,6 +48,7 @@ public class TardisFlightUtils {
         tardisData.setCurrentLocation(playerPos, playerWorld.dimension());
 
         teleportPlayer(player, DMDimensions.TARDIS, capa.getInteriorPos(), 0);
+        TardisSaveHandler.saveTardisData(tardisData);
 
         player.setInvulnerable(false);
         player.abilities.mayfly = false;
@@ -50,9 +56,7 @@ public class TardisFlightUtils {
         player.abilities.mayBuild = true;
         player.onUpdateAbilities();
         player.setInvisible(false);
-        player.setForcedPose(null);
-
-        TardisSaveHandler.saveTardisData(tardisData);
+        player.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(FLIGHT_SPEED_MODIFIER);
     }
 
     public static void startPlayerFlight(ServerPlayerEntity player) {
@@ -68,6 +72,8 @@ public class TardisFlightUtils {
         float rotation = tardisTileEntity.getRotation();
 
         ((ITardisData) tardisData).dalekmodflypanel$setInFlightMode(true);
+        tardisData.setDoorOpen(false);
+        TardisSaveHandler.saveTardisData(tardisData);
 
         capa.setInFlight(true);
         capa.setTardisId(tardisData.getGlobalID());
@@ -84,10 +90,9 @@ public class TardisFlightUtils {
         player.abilities.flying = true;
         player.abilities.mayBuild = false;
         player.setInvisible(true);
-        player.setForcedPose(Pose.STANDING);
         player.onUpdateAbilities();
 
-        TardisSaveHandler.saveTardisData(tardisData);
+        player.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier(FLIGHT_SPEED_MODIFIER, FLIGHT_SPEED_MODIFIER_NAME, -256, AttributeModifier.Operation.ADDITION));
     }
 
     public static void teleportPlayer(ServerPlayerEntity entity, RegistryKey<World> destinationType, BlockPos destinationPos, float yRot) {

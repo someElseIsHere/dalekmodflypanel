@@ -18,10 +18,11 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.theplaceholder.dalekmodflypanel.block.FlightPanelBlock;
 import org.theplaceholder.dalekmodflypanel.capability.SyncTardisPacket;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapabilityManager;
-import org.theplaceholder.dalekmodflypanel.client.RenderPlayerTardis;
-import org.theplaceholder.dalekmodflypanel.event.TardisHandler;
+import org.theplaceholder.dalekmodflypanel.client.DMFPClientEventHandler;
+import org.theplaceholder.dalekmodflypanel.event.DMFPEventHandler;
 
 import java.util.Optional;
 
@@ -49,8 +50,8 @@ public class DalekModFlyPanel {
         MinecraftForge.EVENT_BUS.register(TardisCapabilityManager.class);
 
         //REGISTER EVENT HANDLERS
-        MinecraftForge.EVENT_BUS.register(TardisHandler.class);
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.register(RenderPlayerTardis.class));
+        MinecraftForge.EVENT_BUS.register(DMFPEventHandler.class);
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.register(DMFPClientEventHandler.class));
     }
 
     public void setup(FMLCommonSetupEvent event){

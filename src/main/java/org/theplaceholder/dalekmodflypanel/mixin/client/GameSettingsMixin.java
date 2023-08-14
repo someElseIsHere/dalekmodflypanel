@@ -1,4 +1,4 @@
-package org.theplaceholder.dalekmodflypanel.mixin;
+package org.theplaceholder.dalekmodflypanel.mixin.client;
 
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.theplaceholder.dalekmodflypanel.client.ClientTardisFlightDataManager;
+import org.theplaceholder.dalekmodflypanel.client.ClientFlightData;
 
 @Mixin(GameSettings.class)
 public class GameSettingsMixin {
@@ -16,7 +16,7 @@ public class GameSettingsMixin {
 
     @Inject(method = "setCameraType", at = @At("HEAD"), cancellable = true)
     private void setCameraType(PointOfView pov, CallbackInfo ci){
-        ClientTardisFlightDataManager.TardisFlightData data = ClientTardisFlightDataManager.getPlayerTardisFlightData(minecraft.player.getUUID());
+        ClientFlightData.TardisFlightData data = ClientFlightData.getPlayerTardisFlightData(minecraft.player.getUUID());
         if (data != null && data.inFlightMode){
             ci.cancel();
         }

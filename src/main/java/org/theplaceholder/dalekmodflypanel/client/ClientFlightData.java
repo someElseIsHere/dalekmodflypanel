@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ClientTardisFlightDataManager {
+public class ClientFlightData {
     public static Map<UUID, TardisFlightData> playerTardisFlightDataMap = new HashMap<>();
 
     public static void setPlayerTardisFlightData(UUID uuid, TardisFlightData data) {

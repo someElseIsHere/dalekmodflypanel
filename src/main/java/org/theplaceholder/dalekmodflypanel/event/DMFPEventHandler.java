@@ -1,10 +1,11 @@
 package org.theplaceholder.dalekmodflypanel.event;
 
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -14,9 +15,9 @@ import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import static org.theplaceholder.dalekmodflypanel.util.TardisFlightUtils.stopPlayerFlight;
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.*;
 
-public class TardisHandler {
+public class DMFPEventHandler {
     @SubscribeEvent
-    public static void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
+    public static void livingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
         if (event.getEntity().level.isClientSide)
             return;
         if (event.getEntity() instanceof PlayerEntity) {
@@ -44,25 +45,15 @@ public class TardisHandler {
     }
 
     @SubscribeEvent
-    public static void onHurt(LivingHurtEvent event) {
-        if (event.getEntity().level.isClientSide)
-            return;
-        if (event.getEntity() instanceof PlayerEntity && isInFlightMode((PlayerEntity)event.getEntity()))
-            event.setCanceled(true);
-    }
-
-    @SubscribeEvent
     public static void deathEvent(LivingDeathEvent e) {
         if (e.getEntity().level.isClientSide)
             return;
-        if (e.getEntity() instanceof PlayerEntity && isInFlightMode((PlayerEntity)e.getEntity()))
-            stopPlayerFlight((ServerPlayerEntity) e.getEntity());
         if (e.getEntity() instanceof PlayerEntity && isInFlightMode((PlayerEntity)e.getEntity()))
             e.setCanceled(true);
     }
 
     @SubscribeEvent
-    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent e) {
+    public static void playerDisconnect(PlayerEvent.PlayerLoggedOutEvent e) {
         if (e.getEntity().level.isClientSide)
             return;
         if (isInFlightMode(e.getPlayer()))
@@ -83,5 +74,21 @@ public class TardisHandler {
             return;
         if (isInFlightMode(e.getPlayer()))
             stopPlayerFlight((ServerPlayerEntity) e.getPlayer());
+    }
+
+    @SubscribeEvent
+    public static void playerItemPickup(PlayerEvent.ItemPickupEvent e) {
+        if (e.getPlayer().level.isClientSide)
+            return;
+        if (isInFlightMode(e.getPlayer()))
+            e.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void playerItemDrop(ItemTossEvent e) {
+        if (e.getPlayer().level.isClientSide)
+            return;
+        if (isInFlightMode(e.getPlayer()))
+            e.setCanceled(true);
     }
 }

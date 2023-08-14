@@ -1,4 +1,4 @@
-package org.theplaceholder.dalekmodflypanel.mixin;
+package org.theplaceholder.dalekmodflypanel.mixin.dalekmod;
 
 import com.swdteam.common.block.tardis.FlightLeverBlock;
 import com.swdteam.common.init.DMDimensions;

@@ -1,4 +1,4 @@
-package org.theplaceholder.dalekmodflypanel.mixin;
+package org.theplaceholder.dalekmodflypanel.mixin.dalekmod;
 
 import com.swdteam.common.tardis.TardisData;
 import org.spongepowered.asm.mixin.Mixin;
