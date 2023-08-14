@@ -26,9 +26,6 @@ import java.util.UUID;
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapability;
 
 public class TardisFlightUtils {
-    public static final String MOUVEMENT_SPEED_NAME = "e3c5b4a0-9c4d-11ea-bb37-0242ac130002";
-    public static final UUID MOUVEMENT_SPEED_UUID = UUID.fromString(MOUVEMENT_SPEED_NAME);
-    public static final AttributeModifier MOUVEMENT_SPEED_MODIFIER = new AttributeModifier(MOUVEMENT_SPEED_UUID, MOUVEMENT_SPEED_NAME, -256, AttributeModifier.Operation.ADDITION);
 
     public static void stopPlayerFlight(ServerPlayerEntity player) {
         TardisCapability capa = getTardisCapability(player);
@@ -57,10 +54,9 @@ public class TardisFlightUtils {
         player.abilities.mayfly = false;
         player.abilities.flying = false;
         player.abilities.mayBuild = true;
+        player.setSpeed(0.1f);
         player.onUpdateAbilities();
         player.setInvisible(false);
-
-        player.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(MOUVEMENT_SPEED_UUID);
 
         ForgeIngameGui.renderCrosshairs = true;
         ForgeIngameGui.renderHotbar = true;
@@ -100,10 +96,9 @@ public class TardisFlightUtils {
         player.abilities.mayfly = true;
         player.abilities.flying = true;
         player.abilities.mayBuild = false;
+        player.setSpeed(0f);
         player.setInvisible(true);
         player.onUpdateAbilities();
-
-        player.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(MOUVEMENT_SPEED_MODIFIER);
 
         ForgeIngameGui.renderCrosshairs = false;
         ForgeIngameGui.renderHotbar = false;

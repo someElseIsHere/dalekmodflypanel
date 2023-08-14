@@ -54,6 +54,9 @@ public class DMFPEventHandler {
                         player.abilities.mayfly = false;
                         player.abilities.flying = false;
                         player.onUpdateAbilities();
+                    }else {
+                        player.abilities.mayfly = true;
+                        player.onUpdateAbilities();
                     }
                     player.displayClientMessage(new TranslationTextComponent("message.dalekmodflypanel.fuel").append(df.format(tardisData.getFuel()) + "%").withStyle(tardisData.getFuel() <= 0 ? TextFormatting.RED : TextFormatting.GREEN), true);
                 }else{

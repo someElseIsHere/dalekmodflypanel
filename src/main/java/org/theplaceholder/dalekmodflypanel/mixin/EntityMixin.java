@@ -15,18 +15,28 @@ import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapa
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.isInFlightMode;
 
 @Mixin(Entity.class)
-public class EntityMixin {
+public abstract class EntityMixin {
     @Shadow public World level;
 
+    @Shadow public abstract boolean isAlive();
+
     @Inject(method = "getBoundingBox", at = @At("HEAD"), cancellable = true)
-    public void getBoundingBox(CallbackInfoReturnable<AxisAlignedBB> cir) {
+    private void getBoundingBox(CallbackInfoReturnable<AxisAlignedBB> cir) {
         if(level.isClientSide) return;
         if(!(((Entity)(Object)this) instanceof PlayerEntity)) return;
         if(getTardisCapability((PlayerEntity)(Object)this) == null) return;
 
-
         EntitySize size = EntitySize.scalable(1F, 2F);
         if(isInFlightMode((PlayerEntity)(Object)this))
             cir.setReturnValue(size.makeBoundingBox(((Entity)(Object)this).position()));
+    }
+    @Inject(method = "canBeCollidedWith", at = @At("HEAD"), cancellable = true)
+    private void canBeCollidedWith(CallbackInfoReturnable<Boolean> cir) {
+        if(level.isClientSide) return;
+        if(!(((Entity)(Object)this) instanceof PlayerEntity)) return;
+        if(getTardisCapability((PlayerEntity)(Object)this) == null) return;
+
+        if(isInFlightMode((PlayerEntity)(Object)this))
+            cir.setReturnValue(isAlive());
     }
 }

@@ -24,13 +24,13 @@ public abstract class LivingEntityMixin extends Entity {
     public double jumpFromGround(double x) {
         if(!(((Entity)this) instanceof PlayerEntity))
             return x;
+
         PlayerEntity player = (PlayerEntity) (Object) this;
         if(isInFlightMode(player)){
             TardisData tardisData = DMTardis.getTardis(getTardisCapability(player).getTardisId());
             if (tardisData.getFuel() <= 0)
                 return 0;
         }
-
         return x;
     }
 }
