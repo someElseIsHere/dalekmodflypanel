@@ -1,10 +1,11 @@
-package org.theplaceholder.dalekmodflypanel.capability;
+package org.theplaceholder.dalekmodflypanel.packet;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.PointOfView;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import org.theplaceholder.dalekmodflypanel.client.ClientFlightData;
 
 import java.util.UUID;
@@ -60,7 +61,7 @@ public class SyncTardisPacket {
         });
     }
 
-    public static void sync(UUID uuid,TardisCapability capability) {
+    public static void sync(UUID uuid, TardisCapability capability) {
         CHANNEL.send(PacketDistributor.ALL.noArg(), new SyncTardisPacket(uuid, capability.getTardisId(), capability.isInFlight(), capability.getRotation(), capability.getTickOnGround(), capability.getTickOffGround()));
     }
 }

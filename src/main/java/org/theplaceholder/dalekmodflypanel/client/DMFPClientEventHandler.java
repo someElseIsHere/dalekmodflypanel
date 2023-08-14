@@ -7,12 +7,16 @@ import com.swdteam.client.tardis.data.ExteriorModels;
 import com.swdteam.common.tardis.TardisData;
 import com.swdteam.model.javajson.JSONModel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.event.FOVUpdateEvent;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -20,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.isInFlightMode;
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.onGround;
 
 public class DMFPClientEventHandler {
@@ -40,6 +45,22 @@ public class DMFPClientEventHandler {
                 IVertexBuilder vertexBuilder = e.getBuffers().getBuffer(RenderType.text(texture));
                 renderTardis(modelTardis, vertexBuilder, e.getPlayer(), e.getMatrixStack(), e.getBuffers(), e.getLight(), e.getLight());
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void guiOpenEvent(GuiOpenEvent e) {
+        Screen gui = e.getGui();
+        if (gui == null) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc == null) return;
+        PlayerEntity player = mc.player;
+        if (player == null) return;
+
+        ClientFlightData.TardisFlightData data = ClientFlightData.getPlayerTardisFlightData(player.getUUID());
+
+        if(data != null && data.inFlightMode && e.getGui() instanceof InventoryScreen){
+            e.setCanceled(true);
         }
     }
 

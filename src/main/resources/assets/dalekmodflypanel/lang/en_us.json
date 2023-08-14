@@ -1,5 +1,7 @@
 {
-  "block.dalekmodflypanel.panel": "Tardis Flight Panel",
+  "block.dalekmodflypanel.panel": "Flight Panel",
   "message.dalekmodflypanel.panel.not_in_tardis": "You must be in a Tardis to use this!",
-  "message.dalekmodflypanel.fuel": "Fuel: "
+  "message.dalekmodflypanel.fuel": "Fuel: ",
+  "subtitles.dalekmodflypanel.tardis_land": "Tardis lands",
+  "subtitles.dalekmodflypanel.tardis_fly": "Tardis flying"
 }

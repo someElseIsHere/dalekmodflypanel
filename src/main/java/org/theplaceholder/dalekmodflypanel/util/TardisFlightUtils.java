@@ -4,7 +4,6 @@ import com.swdteam.common.init.DMBlocks;
 import com.swdteam.common.init.DMDimensions;
 import com.swdteam.common.init.DMTardis;
 import com.swdteam.common.tardis.TardisData;
-import com.swdteam.common.tardis.TardisSaveHandler;
 import com.swdteam.common.tileentity.TardisTileEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -15,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.client.gui.ForgeIngameGui;
-import org.theplaceholder.dalekmodflypanel.capability.SyncTardisPacket;
+import org.theplaceholder.dalekmodflypanel.packet.SyncTardisPacket;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
 
@@ -95,7 +94,6 @@ public class TardisFlightUtils {
 
         player.setInvulnerable(true);
         player.abilities.mayfly = true;
-        player.abilities.flying = true;
         player.abilities.mayBuild = false;
         player.setInvisible(true);
         player.onUpdateAbilities();

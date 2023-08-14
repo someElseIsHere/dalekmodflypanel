@@ -1,0 +1,14 @@
+{
+  "tardis_land": {
+    "subtitle": "subtitles.dalekmodflypanel.tardis_land",
+    "sounds": [
+      "dalekmodflypanel:tardis_land"
+    ]
+  },
+  "tardis_fly": {
+    "subtitle": "subtitles.dalekmodflypanel.tardis_fly",
+    "sounds": [
+      "dalekmodflypanel:tardis_fly"
+    ]
+  }
+}

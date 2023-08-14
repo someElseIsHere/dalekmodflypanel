@@ -2,10 +2,9 @@ package org.theplaceholder.dalekmodflypanel.event;
 
 import com.swdteam.common.init.DMTardis;
 import com.swdteam.common.tardis.TardisData;
-import com.swdteam.common.tardis.TardisSaveHandler;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -14,13 +13,18 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.theplaceholder.dalekmodflypanel.capability.SyncTardisPacket;
+import org.theplaceholder.dalekmodflypanel.packet.SyncTardisPacket;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
+import org.theplaceholder.dalekmodflypanel.client.DMFPSounds;
+
+import java.text.DecimalFormat;
 
 import static org.theplaceholder.dalekmodflypanel.util.TardisFlightUtils.stopPlayerFlight;
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.*;
 
 public class DMFPEventHandler {
+    public static final DecimalFormat df = new DecimalFormat("#.#");
+
     @SubscribeEvent
     public static void livingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
         if (event.getEntity().level.isClientSide)
@@ -39,13 +43,23 @@ public class DMFPEventHandler {
                     capability.setTickOffGround(capability.getTickOffGround() + 1);
 
                     TardisData tardisData = DMTardis.getTardis(capability.getTardisId());
-                    tardisData.addFuel(-0.1);
+
+                    if (player.abilities.flying){
+                        tardisData.addFuel(-0.025);
+                        if(capability.getTickOffGround() % 27.5 <= 1) {
+                            player.level.playSound(null, player.blockPosition(), DMFPSounds.TARDIS_FLY.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+                        }
+                    }
                     if (tardisData.getFuel() <= 0) {
                         player.abilities.mayfly = false;
                         player.abilities.flying = false;
+                        player.onUpdateAbilities();
                     }
-                    player.displayClientMessage(new TranslationTextComponent("message.dalekmodflypanel.fuel" + tardisData.getFuel()).withStyle(tardisData.getFuel() <= 0 ? TextFormatting.RED : TextFormatting.GREEN), true);
+                    player.displayClientMessage(new TranslationTextComponent("message.dalekmodflypanel.fuel").append(df.format(tardisData.getFuel()) + "%").withStyle(tardisData.getFuel() <= 0 ? TextFormatting.RED : TextFormatting.GREEN), true);
                 }else{
+                    if (capability.getTickOnGround() <= 0)
+                        event.getEntity().level.playSound(null, player.blockPosition(), DMFPSounds.TARDIS_LAND.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+
                     capability.setTickOnGround(capability.getTickOnGround() + 1);
                     if (capability.getTickOnGround() >= 40 && player.isShiftKeyDown()){
                         stopPlayerFlight((ServerPlayerEntity) player);
