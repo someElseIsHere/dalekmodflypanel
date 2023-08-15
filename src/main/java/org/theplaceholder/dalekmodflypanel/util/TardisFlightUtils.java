@@ -13,7 +13,6 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.client.gui.ForgeIngameGui;
 import org.theplaceholder.dalekmodflypanel.packet.SyncTardisPacket;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
@@ -51,16 +50,10 @@ public class TardisFlightUtils {
         player.abilities.flying = false;
         player.abilities.mayBuild = true;
         player.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(flightSpeedModifier);
-        player.onUpdateAbilities();
         player.setInvisible(false);
 
-        ForgeIngameGui.renderCrosshairs = true;
-        ForgeIngameGui.renderHotbar = true;
-        ForgeIngameGui.renderHealth = true;
-        ForgeIngameGui.renderExperiance = true;
-        ForgeIngameGui.renderFood = true;
-        ForgeIngameGui.renderAir = true;
-        ForgeIngameGui.renderArmor = true;
+
+        player.onUpdateAbilities();
     }
 
     public static void startPlayerFlight(ServerPlayerEntity player) {
@@ -95,14 +88,6 @@ public class TardisFlightUtils {
         player.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(flightSpeedModifier);
         player.setInvisible(true);
         player.onUpdateAbilities();
-
-        ForgeIngameGui.renderCrosshairs = false;
-        ForgeIngameGui.renderHotbar = false;
-        ForgeIngameGui.renderHealth = false;
-        ForgeIngameGui.renderExperiance = false;
-        ForgeIngameGui.renderFood = false;
-        ForgeIngameGui.renderAir = false;
-        ForgeIngameGui.renderArmor = false;
     }
 
     public static void teleportPlayer(ServerPlayerEntity entity, RegistryKey<World> destinationType, BlockPos destinationPos, float yRot) {

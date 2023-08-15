@@ -3,6 +3,7 @@ package org.theplaceholder.dalekmodflypanel.packet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.PointOfView;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
@@ -53,9 +54,25 @@ public class SyncTardisPacket {
             if (msg.isInFlight){
                 Minecraft.getInstance().options.setCameraType(PointOfView.THIRD_PERSON_BACK);
                 ClientFlightData.setPlayerTardisFlightData(msg.player, new ClientFlightData.TardisFlightData(msg.tardisId, msg.isInFlight, msg.rotation, msg.tickOnGround, msg.tickOffGround));
+
+                ForgeIngameGui.renderCrosshairs = false;
+                ForgeIngameGui.renderHotbar = false;
+                ForgeIngameGui.renderHealth = false;
+                ForgeIngameGui.renderExperiance = false;
+                ForgeIngameGui.renderFood = false;
+                ForgeIngameGui.renderAir = false;
+                ForgeIngameGui.renderArmor = false;
             }else {
                 Minecraft.getInstance().options.setCameraType(PointOfView.FIRST_PERSON);
                 ClientFlightData.removePlayerTardisFlightData(msg.player);
+
+                ForgeIngameGui.renderCrosshairs = true;
+                ForgeIngameGui.renderHotbar = true;
+                ForgeIngameGui.renderHealth = true;
+                ForgeIngameGui.renderExperiance = true;
+                ForgeIngameGui.renderFood = true;
+                ForgeIngameGui.renderAir = true;
+                ForgeIngameGui.renderArmor = true;
             }
             ctx.get().setPacketHandled(true);
         });
