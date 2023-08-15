@@ -9,7 +9,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapability;
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.isInFlightMode;
@@ -20,17 +21,16 @@ public abstract class LivingEntityMixin extends Entity {
         super(p_i48580_1_, p_i48580_2_);
     }
 
-    @ModifyArg(method = "jumpFromGround", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;setDeltaMovement(DDD)V", ordinal = 0), index = 1)
-    public double jumpFromGround(double x) {
-        if(!(((Entity)this) instanceof PlayerEntity))
-            return x;
-
-        PlayerEntity player = (PlayerEntity) (Object) this;
-        if(isInFlightMode(player)){
-            TardisData tardisData = DMTardis.getTardis(getTardisCapability(player).getTardisId());
-            if (tardisData.getFuel() <= 0)
-                return 0;
+    @Inject(method = "getJumpPower", at = @At(value = "HEAD"))
+    private void getJumpPower(CallbackInfoReturnable<Float> cir){
+        if (((Entity)this)instanceof PlayerEntity){
+            PlayerEntity player = (PlayerEntity) (Object) this;
+            if (isInFlightMode(player)){
+                TardisData tardisData = DMTardis.getTardis(getTardisCapability(player).getTardisId());
+                if (tardisData != null && tardisData.getFuel() == 0.0f){
+                    cir.setReturnValue(0f);
+                }
+            }
         }
-        return x;
     }
 }
