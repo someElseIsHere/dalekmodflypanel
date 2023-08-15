@@ -9,23 +9,19 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.Effects;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.common.ForgeMod;
 import org.theplaceholder.dalekmodflypanel.packet.SyncTardisPacket;
 import org.theplaceholder.dalekmodflypanel.capability.TardisCapability;
 import org.theplaceholder.dalekmodflypanel.interfaces.ITardisData;
 
-import java.util.UUID;
-
 import static org.theplaceholder.dalekmodflypanel.util.TardisUtils.getTardisCapability;
 
 public class TardisFlightUtils {
+    private static AttributeModifier flightSpeedModifier = new AttributeModifier("TardisFlightSpeed", -255, AttributeModifier.Operation.ADDITION);
 
     public static void stopPlayerFlight(ServerPlayerEntity player) {
         TardisCapability capa = getTardisCapability(player);
@@ -54,7 +50,7 @@ public class TardisFlightUtils {
         player.abilities.mayfly = false;
         player.abilities.flying = false;
         player.abilities.mayBuild = true;
-        player.setSpeed(0.1f);
+        player.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(flightSpeedModifier);
         player.onUpdateAbilities();
         player.setInvisible(false);
 
@@ -96,7 +92,7 @@ public class TardisFlightUtils {
         player.abilities.mayfly = true;
         player.abilities.flying = true;
         player.abilities.mayBuild = false;
-        player.setSpeed(0f);
+        player.getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(flightSpeedModifier);
         player.setInvisible(true);
         player.onUpdateAbilities();
 
